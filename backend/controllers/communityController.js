@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Project } from "../models/project.js";
+import { Project } from "../models/Project.js";
 
 // 1. Get List of Published Projects [2-5]
 export async function list(req, res, next) {

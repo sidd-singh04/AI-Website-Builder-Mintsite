@@ -1,4 +1,4 @@
-import { Payment } from "../models/payment.js";
+import { Payment } from "../models/Payment.js";
 
 import {
   isRazorpayConfigured,

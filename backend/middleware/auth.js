@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { User } from "../models/user.js";
+import { User } from "../models/User.js";
 
 // 1. Sign JWT Token valid for 30 days
 export function signToken(userId) {

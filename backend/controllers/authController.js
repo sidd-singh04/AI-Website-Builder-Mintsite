@@ -1,11 +1,10 @@
-import { User } from "../models/user.js";
-import { Project } from "../models/project.js";
+import { User } from "../models/User.js";
+import { Project } from "../models/Project.js";
 import {
   generateOtp,
   saveOtp,
   sendOtpEmail,
   verifyOtp,
-  peekOtp
 } from "../utils/services.js";
 import { signToken } from "../middleware/auth.js";
 

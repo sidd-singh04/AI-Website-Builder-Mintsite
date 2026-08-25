@@ -383,12 +383,10 @@ export const createOrder = (
   );
 
 
-export const verifyPayment = (
-  data
-) =>
+export const verifyPayment = (data) =>
   body(
     API.post(
-      "/payments/verify",
+      "/payments/verify-payment",
       data
     )
   );

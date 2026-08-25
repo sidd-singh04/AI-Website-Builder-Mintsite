@@ -89,4 +89,4 @@ paymentSchema.methods.toClient = function () {
 };
 
 
-export const Payment = mongoose.model("Payment", paymentSchema);
+export const Payment = mongoose.models.Payment || mongoose.model("Payment", paymentSchema);

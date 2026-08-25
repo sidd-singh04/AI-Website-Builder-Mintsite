@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Project } from "../models/project.js";
+import { Project } from "../models/Project.js";
 import { enhancePrompt, generateSite } from "../utils/services.js";
 
 // Helper to validate MongoDB ObjectId [1]
