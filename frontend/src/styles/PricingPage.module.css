@@ -1,0 +1,396 @@
+.root {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  overflow-x: hidden;
+  background-color: #0a0a0c;
+}
+
+/* 1. HERO HEADER AREA */
+.heroSection {
+  padding: 5rem 1.5rem 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.heroInner {
+  max-width: 800px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.freeBanner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.bannerIcon {
+  fill: #f59e0b;
+}
+
+.heroTitle {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  line-height: 1.1;
+  margin: 0 0 12px;
+
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroSub {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+}
+
+/* 2. FEEDBACK NOTIFICATIONS & GRID WORKSPACE AREA */
+.workspaceArea {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1.5rem 6rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  flex: 1;
+}
+
+.notificationBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.spinner {
+  animation: rotate 1s linear infinite;
+  color: #a855f7;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.successBanner {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.successIcon {
+  color: #10b981;
+  fill: rgba(16, 185, 129, 0.2);
+}
+
+.canceledBanner {
+  background-color: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.canceledIcon {
+  color: #f59e0b;
+}
+
+.loadingBox {
+  padding: 4rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 14.5px;
+}
+
+.spinnerLarge {
+  width: 36px;
+  height: 36px;
+  color: #a855f7;
+  animation: rotate 1s linear infinite;
+}
+
+/* 3. PRICING CARD GRID */
+.pricingGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .pricingGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pricingGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 2.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+}
+
+.popularCard {
+  border-color: rgba(168, 85, 247, 0.4);
+  background: radial-gradient(circle at top right, rgba(168, 85, 247, 0.08), transparent 60%), rgba(255, 255, 255, 0.02);
+}
+
+.popularCard:hover {
+  border-color: rgba(168, 85, 247, 0.6);
+}
+
+.popularBadge {
+  position: absolute;
+  top: 15px;
+  right: -30px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 30px;
+  transform: rotate(45deg);
+  letter-spacing: 1px;
+}
+
+.packageName {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+.packageDescription {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.5;
+}
+
+.priceBox {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.priceAmount {
+  font-size: 36px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.priceOneTime {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.creditsBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  width: fit-content;
+}
+
+.zapIcon {
+  fill: #f59e0b;
+  color: #f59e0b;
+}
+
+.creditsCount {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+/* Actions CTA Button */
+.buyBtn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem;
+  font-weight: 600;
+  font-size: 14.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.buyBtnDefault {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.buyBtnDefault:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.buyBtnPopular {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+}
+
+.buyBtnPopular:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.35);
+}
+
+/* Features details list */
+.featuresList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.featureRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.4;
+}
+
+.checkIcon {
+  color: #10b981; /* Green */
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* 4. FAQ ACCORDION PANEL */
+.faqSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.faqHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.faqIconHeader {
+  color: #a855f7;
+}
+
+.faqTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.faqSubtitle {
+  font-size: 14.5px;
+  color: rgba(255, 255, 255, 0.45);
+  max-width: 600px;
+  line-height: 1.5;
+}
+
+.faqGrid {
+  max-width: 768px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.faqCard {
+  background-color: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.faqCard:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.faqQuestionBtn {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.faqAnswer {
+  padding: 0 1.5rem 1.25rem 1.5rem;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+
+}

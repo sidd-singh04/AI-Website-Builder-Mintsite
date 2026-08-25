@@ -1,0 +1,432 @@
+.container {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  overflow-x: hidden;
+  background-color: #0a0a0c;
+}
+
+/* 1. HERO SECTION */
+.heroSection {
+  padding: 5rem 1.5rem 4rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(85vh - 64px);
+  position: relative;
+}
+
+.heroInner {
+  max-width: 800px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+}
+
+.trialBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  padding: 6px 14px 6px 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.trialBadge:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.trialBadgeNew {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.5px;
+}
+
+.trialBadgeText {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.trialBadgeIcon {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.heroTitle {
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  text-align: center;
+  transform: scaleX(1.04);
+  margin-bottom: 25px;
+}
+
+.heroTitleHighlight {
+  background: linear-gradient(90deg, #8b5cf6, #c084fc, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.heroSub {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+/* Prompt Box */
+.heroInputWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 640px;
+  gap: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.heroInput {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 14.5px;
+  padding: 0.75rem 1rem;
+  outline: none;
+  width: 100%;
+}
+
+.heroInput::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.heroSubmitBtn {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.heroSubmitBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4);
+}
+
+.heroTrust {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.heroTrustLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.heroTrustLogos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.heroTrustItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
+
+.heroTrustDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* 2. FEATURES GRID */
+.featureSection {
+  padding: 6rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.featureInner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.featureHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  margin-bottom: 4rem;
+}
+
+.featureBadge {
+  background-color: rgba(99, 102, 241, 0.1);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  letter-spacing: 0.5px;
+}
+
+.featureTitle {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.featureTitle {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.featureTitleHighlighted {
+  background: linear-gradient(
+    90deg,
+    #7c3aed 0%,
+    #a855f7 50%,
+    #ec4899 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.featureCard {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.2s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.featureIconWrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.featureCardTitle {
+  font-size: 16.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.featureCardDescription {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.55;
+}
+
+/* 3. CALL TO ACTION (CTA) */
+.ctaSection {
+  padding: 4rem 1.5rem 8rem 1.5rem;
+}
+
+.ctaBackground {
+  max-width: 1000px;
+  margin: 0 auto;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(99, 102, 241, 0.12),
+      transparent 60%
+    ),
+    rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  padding: 4rem 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.8);
+}
+
+.ctaInner {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+}
+
+.ctaFreeBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ctaFreeBadgeIcon {
+  fill: #f59e0b;
+}
+
+.ctaTitle {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.55;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  text-align: center;
+
+
+}
+
+.ctaTitleHighlighted {
+  display: inline-block;
+  margin-top: 10px;
+
+  background: linear-gradient(
+    90deg,
+    #7c3aed 0%,
+    #a855f7 50%,
+    #ec4899 100%
+  );
+
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.ctaSub {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.ctaButton {
+  background: #ffffff;
+  color: #0a0a0c;
+  border: none;
+  font-weight: 700;
+  font-size: 14.5px;
+  border-radius: 10px;
+  padding: 0.85rem 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+}
+
+.ctaButton:hover {
+  background-color: #f3f4f6;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.25);
+}
+
+.ctaButtonIcon {
+  transition: transform 0.2s ease;
+}
+
+.ctaButton:hover .ctaButtonIcon {
+  transform: translateX(4px);
+}
+
+/* RESPONSIVE DESIGN */
+@media (min-width: 640px) {
+  .heroInputWrapper {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 768px) {
+  .heroTitle {
+    font-size: 4.25rem;
+  }
+
+  .featureTitle {
+    font-size: 3rem;
+  }
+
+  .featuresGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ctaTitle {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .featuresGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}

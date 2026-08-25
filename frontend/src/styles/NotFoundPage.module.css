@@ -1,0 +1,140 @@
+.container {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  overflow: hidden;
+  background-color: #0a0a0c;
+}
+
+.header {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  z-index: 10;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  z-index: 10;
+}
+
+.card {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 3.5rem 2.5rem;
+  box-shadow: 0 25px 50px -15px rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.badge {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  letter-spacing: 1px;
+}
+
+.number {
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  WebkitBackgroundClip: text;
+  WebkitTextFillColor: transparent;
+  letter-spacing: -2px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.description {
+  font-size: 14.5px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  margin-top: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 0.8rem 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+  border: none;
+  cursor: pointer;
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.35);
+}
+
+.secondaryButton {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 0.8rem 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondaryButton:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.icon {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.primaryButton:hover .icon,
+.secondaryButton:hover .icon {
+  color: #ffffff;
+
+}

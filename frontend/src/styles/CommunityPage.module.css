@@ -1,0 +1,424 @@
+.root {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  overflow-x: hidden;
+  background-color: #0a0a0c;
+}
+
+/* 1. HERO HEADER AREA */
+.heroSection {
+  padding: 5rem 1.5rem 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.heroInner {
+  max-width: 800px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.heroTitle {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  line-height: 1.1;
+  margin: 0 0 12px;
+
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroSub {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+}
+
+/* 2. FILTER WORKSPACE AREA */
+.workspaceArea {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1.5rem 6rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  flex: 1;
+}
+
+.filterBar {
+  display: flex;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 4px;
+  width: fit-content;
+}
+
+.filterBtn {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterBtnActive {
+  background-color: rgba(168, 85, 247, 0.15);
+  color: #c084fc; /* Active active color purple */
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+.filterBtnInactive {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid transparent;
+}
+
+.filterBtnInactive:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* 3. SHOWCASE STATES PANEL */
+.cardMessage {
+  background-color: rgba(255, 255, 255, 0.01);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 6rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.25rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14.5px;
+}
+
+.loadingSpinner {
+  width: 32px;
+  height: 32px;
+  color: #a855f7;
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.errorText {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.2);
+  background-color: rgba(248, 113, 113, 0.02);
+}
+
+.emptyText {
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.emptyHighlight {
+  color: #a855f7;
+  font-weight: 700;
+}
+
+.createBtn {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+}
+
+.createBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.35);
+}
+
+/* 4. CHRONOLOGICAL GRID */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* CARD DETAILS */
+.card {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.cardImageArea {
+  height: 180px;
+  position: relative;
+  background-color: #0d0d10;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(10, 10, 12, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.cardImageArea:hover .cardOverlay {
+  opacity: 1;
+}
+
+.viewLiveBadge {
+  background-color: #ffffff;
+  color: #0a0a0c;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transform: translateY(8px);
+  transition: transform 0.2s ease;
+}
+
+.cardImageArea:hover .viewLiveBadge {
+  transform: translateY(0);
+}
+
+/* Mock Browser frame mock-up */
+.mockBrowser {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.mockBrowserHeader {
+  height: 28px;
+  background-color: #121216;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+}
+
+.browserDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.mockBrowserBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.25);
+  user-select: none;
+}
+
+.thumbnailIcon {
+  width: 32px;
+  height: 32px;
+  stroke-width: 1.5;
+}
+
+.thumbnailText {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Card content body */
+.cardBody {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.projectName {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: color 0.15s ease;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.projectName:hover {
+  color: #c084fc;
+}
+
+.badgeRow {
+  display: flex;
+  gap: 4px;
+}
+
+.ownBadge {
+  background-color: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  color: #c084fc;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.cardMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.authorLabel {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 120px;
+}
+
+.dateLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Card metrics footer */
+.cardFooter {
+  padding: 10px 1.25rem;
+  background-color: rgba(255, 255, 255, 0.01);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statsItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.statIcon {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.likeBtn {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.likeBtn:hover:not(.disabledLike) {
+  color: #ef4444; /* hover color red */
+  background-color: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.liked {
+  color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.08) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+.heartFilled {
+  fill: #ef4444;
+  color: #ef4444;
+}
+
+.disabledLike {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+
