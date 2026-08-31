@@ -174,14 +174,50 @@ The platform ships a COMPLETE working cart (slide-in drawer, quantity +/-, runni
 - Sign In page (data-page="signin"): centered .auth-card with <h1>Welcome back</h1>, fields: Email + Password. Submit button: "Sign in". Bottom link: "Don't have an account? Sign up" → href="#signup".
 - Do NOT add onsubmit or any JavaScript to forms. The platform intercepts every form submit, blocks the page reload, and shows a contextual demo confirmation on its own (e.g. "✓ Signed in — this is a demo", "✓ Message sent — this is a demo"). Just write the fields + a normal <button type="submit"> with its REAL label ("Sign in", "Create account", "Send message") — the platform keeps that label.
 
-═══ IMAGES — REAL KEYWORD PHOTOS (CRITICAL) ═══
-Use loremflickr for real photos matched to keywords. Pattern:
-  https://loremflickr.com/600/600/<comma,separated,keywords>?lock=<unique-int>
-- keywords: 2-4 SPECIFIC lowercase tags for the subject (e.g. "rose,tulip,bouquet,flower"; "pineapple,fruit,fresh"; "burger,gourmet,food"). More specific = more relevant.
-- lock = a UNIQUE integer per image (101, 102, 103… never reuse) so each card gets a stable, different photo.
-- alt = the real subject name (e.g. alt="Rose & Tulip Bouquet").
-- onerror falls back to a guaranteed-working random photo so a card is NEVER blank:
-  onerror="this.onerror=null;this.src='https://picsum.photos/seed/'+encodeURIComponent(this.alt)+'/600/600'"
+
+
+═══ IMAGES — RELIABLE REAL PHOTOS (CRITICAL) ═══
+Use real remote photos for website images. Images MUST remain visible and MUST NOT use loremflickr.com.
+
+For every <img>:
+- Use this reliable image URL pattern:
+  https://picsum.photos/seed/<unique-seed>/600/600
+
+- The seed MUST be unique for every image so different cards/sections get different stable photos.
+- Build the seed from the image subject and a unique number.
+  Examples:
+    https://picsum.photos/seed/rose-bouquet-101/600/600
+    https://picsum.photos/seed/fresh-pineapple-102/600/600
+    https://picsum.photos/seed/gourmet-burger-103/600/600
+
+- Use lowercase descriptive seeds containing the actual subject.
+- Never use loremflickr.com.
+- Never use placeholder.com.
+- Never use broken, fake, invented, or localhost image URLs.
+- Never leave an <img> without a src.
+- Every image MUST have a meaningful alt attribute describing the actual subject.
+  Example:
+    alt="Rose & Tulip Bouquet"
+
+IMAGE FALLBACK:
+Every <img> MUST have an onerror fallback so the image area is never blank:
+
+onerror="this.onerror=null;this.src='https://picsum.photos/seed/fallback-'+encodeURIComponent(this.alt)+'/600/600'"
+
+Example:
+
+<img
+  src="https://picsum.photos/seed/rose-bouquet-101/600/600"
+  alt="Rose & Tulip Bouquet"
+  onerror="this.onerror=null;this.src='https://picsum.photos/seed/fallback-'+encodeURIComponent(this.alt)+'/600/600'"
+/>
+
+IMPORTANT:
+- Do NOT remove images just because a reliable subject-specific URL is unavailable.
+- Always include an image.
+- Use Picsum as the reliable image provider.
+- Keep images visually relevant through descriptive seeds and meaningful alt text.
+- For product cards, food cards, portfolio projects, galleries, etc., every card that previously required an image MUST still contain an image.
 
 HERO BACKGROUND: the hero's full-bleed BACKGROUND must be a CSS gradient/colour, NEVER a background:url() to an external image (it can fail and leave the hero blank). The hero's RIGHT-column visual may be an HTML/CSS-built mock (best for saas/tech) OR a loremflickr <img> with the picsum onerror fallback (good for shops/portfolios) — either way the hero is never empty.
 

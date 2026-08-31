@@ -78,20 +78,25 @@ projectSchema.methods.toClient = function(){
 
 // To print the trim public view of the project
 
-projectSchema.methods.toPublicCard = function({ withHtml = false } = {}){
-    const card = {
-        id : this._id.toString(),
-        name : this.name,
-        prompt : this.prompt,
-        publishedAt : this.publishedAt,
-        views : this.views,
-        likes : this.likes,
-        author : this.populated("user") && this.user?.name ? this.user.name : "Anonymous"
-    };
+projectSchema.methods.toPublicCard = function ({ withHtml = false } = {}) {
+  const card = {
+    id: this._id.toString(),
+    name: this.name,
+    prompt: this.prompt,
+    publishedAt: this.publishedAt,
+    views: this.views,
+    likes: this.likes,
+    author:
+      this.populated("user") && this.user?.name
+        ? this.user.name
+        : "Anonymous",
+  };
 
-    if(withHtml) card.html = this.html;
-    return card;
+  if (withHtml) {
+    card.html = this.html;
+  }
 
+  return card;
 };
 
 export const Project = mongoose.models.Project || mongoose.model("Project", projectSchema);

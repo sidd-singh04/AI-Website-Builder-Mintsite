@@ -84,7 +84,7 @@ export default function DashboardPage() {
       setProjects(projRes.data.projects || []);
 
       // 2. Fetch user profile updates (credits check)
-      const userRes = await API.get("/me");
+      const userRes = await API.get("/auth/me");
       if (userRes.data?.user) {
         updateUser(userRes.data.user);
       }
@@ -104,7 +104,7 @@ export default function DashboardPage() {
   const loadContributions = async () => {
     setContribLoading(true);
     try {
-      const res = await API.get("/me/contributions");
+      const res = await API.get("/auth/me/contributions");
       setContributions(res.data.counts || {});
       setTotalContributions(res.data.total || 0);
     } catch (err) {

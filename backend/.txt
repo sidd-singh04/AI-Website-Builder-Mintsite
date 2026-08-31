@@ -1,0 +1,8 @@
+// ═══ IMAGES — REAL KEYWORD PHOTOS (CRITICAL) ═══
+// Use loremflickr for real photos matched to keywords. Pattern:
+//   https://loremflickr.com/600/600/<comma,separated,keywords>?lock=<unique-int>
+// - keywords: 2-4 SPECIFIC lowercase tags for the subject (e.g. "rose,tulip,bouquet,flower"; "pineapple,fruit,fresh"; "burger,gourmet,food"). More specific = more relevant.
+// - lock = a UNIQUE integer per image (101, 102, 103… never reuse) so each card gets a stable, different photo.
+// - alt = the real subject name (e.g. alt="Rose & Tulip Bouquet").
+// - onerror falls back to a guaranteed-working random photo so a card is NEVER blank:
+//   onerror="this.onerror=null;this.src='https://picsum.photos/seed/'+encodeURIComponent(this.alt)+'/600/600'"

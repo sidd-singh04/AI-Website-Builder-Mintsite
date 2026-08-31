@@ -174,81 +174,222 @@ function visibleText(html) {
 }
 
 // 6. Generate or Refine Website Code using AI [11-16, 20]
+// export async function generate(req, res, next) {
+//   try {
+//     const project = await loadOwnProject(req.params.id, req, res);
+//     if (!project) return;
+    
+//     // First generation cost is 5, edit/refinement cost is 2 [11]
+//     const isFirstTime = !project.html || project.html.length < 100;
+//     const cost = isFirstTime ? 5 : 2;
+    
+//     // Check if user has sufficient credits [13]
+//     if (req.user.credits < cost) {
+//       return res.status(400).json({
+//         error: `You need at least ${cost} credits to generate the site over here`
+//       });
+//     }
+    
+//     const prompt = (req.body.prompt || "").trim();
+//     if (!prompt) {
+//       return res.status(400).json({
+//         error: "Prompt is required over here"
+//       });
+//     }
+    
+//     if (prompt.length > 2000) { // Max limit 2000 characters [13]
+//       return res.status(400).json({
+//         error: "Prompt is too long over here"
+//       });
+//     }
+    
+//     // Add prompt to project messages [13]
+//     project.messages.push({
+//       role: "user",
+//       text: prompt
+//     });
+    
+//     // Enhance prompt using LLM if first generation [14]
+//     let enhancedPrompt = project.enhancedPrompt;
+//     if (isFirstTime) {
+//       enhancedPrompt = await enhancePrompt(prompt);
+//       project.enhancedPrompt = enhancedPrompt;
+//     }
+    
+//     // Formulate previous conversation history for LLM context [15]
+//     const history = project.messages.map((m) => ({
+//       role: m.role,
+//       text: m.text
+//     }));
+    
+//     // Trigger live site HTML generation/refinement [15, 16]
+//     const outcome = await generateSite({
+//       previousHtml: project.html,
+//       history,
+//       prompt,
+//       enhancedPrompt
+//     });
+    
+//     project.html = outcome.html;
+    
+//     // Add AI response as assistant message [12]
+//     project.messages.push({
+//       role: "assistant",
+//       text: outcome.message || "Here is your generated website code over here"
+//     });
+    
+//     // Deduct user credits [12]
+//     req.user.credits -= cost;
+//     await req.user.save();
+    
+//     await project.save();
+    
+//     return res.json({
+//       project: project.toClient(),
+//       user: req.user.toClient()
+//     });
+//   } catch (err) {
+//     next(err);
+//   }
+// }
+
+
+
+
+
+
+
+// 6. Generate or Refine Website Code using AI [11-16, 20]
+
 export async function generate(req, res, next) {
   try {
+    console.log("1️⃣ Generate started");
+
     const project = await loadOwnProject(req.params.id, req, res);
     if (!project) return;
-    
-    // First generation cost is 5, edit/refinement cost is 2 [11]
+
+    console.log("2️⃣ Project loaded");
+
+    // First generation cost is 5, edit/refinement cost is 2
     const isFirstTime = !project.html || project.html.length < 100;
     const cost = isFirstTime ? 5 : 2;
-    
-    // Check if user has sufficient credits [13]
+
+    console.log("3️⃣ First time:", isFirstTime);
+    console.log("4️⃣ Cost:", cost);
+
+    // Check if user has sufficient credits
     if (req.user.credits < cost) {
       return res.status(400).json({
-        error: `You need at least ${cost} credits to generate the site over here`
+        error: `You need at least ${cost} credits to generate the site`
       });
     }
-    
+
+    console.log("5️⃣ Credits check passed");
+
     const prompt = (req.body.prompt || "").trim();
+
     if (!prompt) {
       return res.status(400).json({
-        error: "Prompt is required over here"
+        error: "Prompt is required"
       });
     }
-    
-    if (prompt.length > 2000) { // Max limit 2000 characters [13]
+
+    if (prompt.length > 2000) {
       return res.status(400).json({
-        error: "Prompt is too long over here"
+        error: "Prompt is too long, maximum 2000 characters"
       });
     }
-    
-    // Add prompt to project messages [13]
+
+    console.log("6️⃣ Prompt received:", prompt);
+
+    // Add user prompt to project messages
     project.messages.push({
       role: "user",
       text: prompt
     });
-    
-    // Enhance prompt using LLM if first generation [14]
+
+    console.log("7️⃣ User message added");
+
+    // Enhance prompt using LLM only during first generation
     let enhancedPrompt = project.enhancedPrompt;
+
     if (isFirstTime) {
-      enhancedPrompt = await enhancePrompt(prompt);
+      console.log("8️⃣ Calling enhancePrompt...");
+
+      const enhancedResult = await enhancePrompt(prompt);
+
+      console.log("9️⃣ enhancePrompt completed");
+      console.log("Enhanced result:", enhancedResult);
+
+      // enhancePrompt() returns:
+      // {
+      //   text: "...",
+      //   source: "llm"
+      // }
+
+      // Project schema expects enhancedPrompt to be a String
+      enhancedPrompt = enhancedResult.text;
+
       project.enhancedPrompt = enhancedPrompt;
+
+      console.log("🔟 enhancedPrompt saved as string");
     }
-    
-    // Formulate previous conversation history for LLM context [15]
+
+    // Formulate previous conversation history for LLM context
     const history = project.messages.map((m) => ({
       role: m.role,
       text: m.text
     }));
-    
-    // Trigger live site HTML generation/refinement [15, 16]
+
+    console.log("1️⃣1️⃣ History created");
+
+    // Generate / refine website
+    console.log("1️⃣2️⃣ Calling generateSite...");
+
     const outcome = await generateSite({
       previousHtml: project.html,
       history,
       prompt,
       enhancedPrompt
     });
-    
+
+    console.log("1️⃣3️⃣ generateSite completed");
+    console.log("Generated HTML length:", outcome?.html?.length);
+
     project.html = outcome.html;
-    
-    // Add AI response as assistant message [12]
+
+    // Add AI response as assistant message
     project.messages.push({
       role: "assistant",
-      text: outcome.message || "Here is your generated website code over here"
+      text:
+        outcome.message ||
+        "Here is your generated website code"
     });
-    
-    // Deduct user credits [12]
+
+    console.log("1️⃣4️⃣ Assistant message added");
+
+    // Deduct credits
     req.user.credits -= cost;
+
+    console.log("1️⃣5️⃣ Credits deducted");
+
     await req.user.save();
-    
+
+    console.log("1️⃣6️⃣ User saved");
+
     await project.save();
-    
+
+    console.log("1️⃣7️⃣ Project saved");
+
+    console.log("1️⃣8️⃣ Sending response to frontend");
+
     return res.json({
       project: project.toClient(),
       user: req.user.toClient()
     });
+
   } catch (err) {
+    console.error("❌ GENERATE ERROR:", err);
     next(err);
   }
 }

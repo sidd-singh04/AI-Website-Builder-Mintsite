@@ -16,15 +16,21 @@
   justify-content: space-between;
 }
 
+
+
 .headerTitle {
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.5px;
   background: linear-gradient(135deg, #ffffff, #e2e8f0);
-  WebkitBackgroundClip: text;
-  WebkitTextFillColor: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 0.25rem;
+  line-height: 1.3;
 }
+
+
 
 .headerSubtitle {
   font-size: 14.5px;

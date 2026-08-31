@@ -168,26 +168,47 @@ function CommunityCard({ project, isLoggedIn, onLike, onOpen }) {
   return (
     <div className={s.card}>
       {/* 1. Project Preview Thumbnail Header */}
-      <div className={s.cardImageArea} onClick={onOpen}>
-        <div className={s.cardOverlay}>
-          <div className={s.viewLiveBadge}>
-            <ExternalLink size={14} />
-            <span>Preview Code</span>
-          </div>
-        </div>
-        {/* Render clean styled iframe preview or placeholder mock */}
-        <div className={s.mockBrowser}>
-          <div className={s.mockBrowserHeader}>
-            <span className={s.browserDot} style={{ backgroundColor: "#ef4444" }} />
-            <span className={s.browserDot} style={{ backgroundColor: "#f59e0b" }} />
-            <span className={s.browserDot} style={{ backgroundColor: "#10b981" }} />
-          </div>
-          <div className={s.mockBrowserBody}>
-            <Sparkles className={s.thumbnailIcon} />
-            <span className={s.thumbnailText}>HTML & CSS Code Live Preview</span>
-          </div>
-        </div>
+ <div className={s.cardImageArea} onClick={onOpen}>
+  <div className={s.cardOverlay}>
+    <div className={s.viewLiveBadge}>
+      <ExternalLink size={14} />
+      <span>View Website</span>
+    </div>
+  </div>
+
+  <div className={s.mockBrowser}>
+    <div className={s.mockBrowserHeader}>
+      <span
+        className={s.browserDot}
+        style={{ backgroundColor: "#ef4444" }}
+      />
+      <span
+        className={s.browserDot}
+        style={{ backgroundColor: "#f59e0b" }}
+      />
+      <span
+        className={s.browserDot}
+        style={{ backgroundColor: "#10b981" }}
+      />
+    </div>
+
+    {project.html ? (
+      <iframe
+        title={project.name}
+        srcDoc={project.html}
+        className={s.websitePreview}
+        sandbox="allow-scripts"
+      />
+    ) : (
+      <div className={s.mockBrowserBody}>
+        <Sparkles className={s.thumbnailIcon} />
+        <span className={s.thumbnailText}>
+          No preview available
+        </span>
       </div>
+    )}
+  </div>
+</div>
 
       {/* 2. Card Content details */}
       <div className={s.cardBody}>

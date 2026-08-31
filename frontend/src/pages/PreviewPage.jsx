@@ -194,27 +194,22 @@ export default function PreviewPage() {
       </header>
 
       {/* RENDER CANVAS PREVIEW AREA */}
-      <main className={s.previewArea}>
-        {project?.html ? (
-          <iframe
-            title={project.name}
-            srcDoc={safePreviewHtml(project.html)}
-            className={s.iframe}
-            sandbox="
-              allow-scripts
-              allow-same-origin
-              allow-modals
-              allow-popups
-            "
-          />
-        ) : (
-          <div className={s.emptyContainer}>
-            <Sparkles size={40} className={s.emptyIcon} />
-
-            <p>This project has no generated HTML code.</p>
-          </div>
-        )}
-      </main>
+      {/* RENDER CANVAS PREVIEW AREA */}
+<main className={s.previewArea}>
+  {project?.html ? (
+    <iframe
+      title={project.name}
+      srcDoc={safePreviewHtml(project.html)}
+      className={s.iframe}
+      sandbox="allow-scripts allow-modals allow-popups"
+    />
+  ) : (
+    <div className={s.emptyContainer}>
+      <Sparkles size={40} className={s.emptyIcon} />
+      <p>This project has no generated HTML code.</p>
+    </div>
+  )}
+</main>
     </div>
   );
 }

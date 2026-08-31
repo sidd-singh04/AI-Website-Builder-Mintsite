@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
           setUser(JSON.parse(savedUser));
           
           // Request fresh user profile info (e.g. credits, name changes)
-          const res = await API.get("/me");
+          const res = await API.get("/auth/me");
           if (res.data && res.data.user) {
             setUser(res.data.user);
             localStorage.setItem("user", JSON.stringify(res.data.user));

@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import AuthShell from "../components/AuthShell.jsx";
 import { useAuth } from "../context/authContext.jsx";
-import { API } from "../utils/api.js";
+import { login } from "../utils/api.js";
 import s from "../styles/LoginPage.module.css";
 
 export default function LoginPage() {
@@ -28,76 +28,98 @@ export default function LoginPage() {
   // Prefill email if it changes in search parameters
   useEffect(() => {
     if (initialEmail) {
-      setForm((prev) => ({ ...prev, email: initialEmail }));
+      setForm((prev) => ({
+        ...prev,
+        email: initialEmail
+      }));
     }
   }, [initialEmail]);
 
-  // Generic onchange handler
+  // Generic input change handler
   const update = (field) => (event) => {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       [field]: event.target.value
-    });
-    setErrors({
-      ...errors,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
       [field]: undefined
-    });
+    }));
+
     setSubmitError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const er = {};
 
-    // Client-side validations
+    // Client-side validation
     if (!form.email.includes("@")) {
-      er.email = "Enter a valid email over here";
+      er.email = "Enter a valid email.";
     }
 
     if (form.password.length < 6) {
-      er.password = "At least six characters are required for the password over here";
+      er.password = "Password must be at least 6 characters.";
     }
 
     setErrors(er);
 
-    // Stop execution if there are local validation errors
-    if (Object.keys(er).length > 0) return;
+    // Stop if validation fails
+    if (Object.keys(er).length > 0) {
+      return;
+    }
 
     setLoading(true);
     setSubmitError("");
 
     try {
-      // Trigger backend authentication call
-      const res = await API.post("/login", form);
-      const { token, user } = res.data;
+      // api.js handles:
+      // POST /api/auth/login
+      const res = await login(form);
 
-      // Update context and browser storage with session details
+      const { token, user } = res;
+
+      // Store authenticated user/session
       loginUser(token, user);
 
-      // Secure redirection back to the generation canvas or home dashboard
+      // Redirect to dashboard
       if (initialPrompt) {
-        navigate(`/dashboard?prompt=${encodeURIComponent(initialPrompt)}`);
+        navigate(
+          `/dashboard?prompt=${encodeURIComponent(initialPrompt)}`
+        );
       } else {
         navigate("/dashboard");
       }
+
     } catch (err) {
       const status = err.response?.status;
       const data = err.response?.data || {};
 
-      // If the email is registered but unverified, redirect to OTP verify screen
-      if (status === 403 && data.needsVerification && data.email) {
-        const params = new URLSearchParams({ email: data.email });
+      // User exists but email is not verified
+      if (
+        status === 403 &&
+        data.needsVerification &&
+        data.email
+      ) {
+        const params = new URLSearchParams({
+          email: data.email
+        });
+
         if (initialPrompt) {
           params.append("prompt", initialPrompt);
         }
+
         navigate(`/verify-email?${params.toString()}`);
         return;
       }
 
       setSubmitError(
-        data.error || 
-        "Invalid email or password credentials over here"
+        data.error ||
+        "Invalid email or password."
       );
+
     } finally {
       setLoading(false);
     }
@@ -106,65 +128,113 @@ export default function LoginPage() {
   return (
     <AuthShell
       title="Sign In"
-      subtitle="Enter your email below to log in to your account over here"
+      subtitle="Enter your email below to log in to your account."
       footer={
         <>
           Don't have an account?{" "}
-          <Link to="/register" className={s.signupLink}>
+          <Link
+            to="/register"
+            className={s.signupLink}
+          >
             Sign Up
           </Link>
         </>
       }
     >
-      <form onSubmit={handleSubmit} className={s.form}>
-        {/* Verification Success Notice Banner */}
+      <form
+        onSubmit={handleSubmit}
+        className={s.form}
+      >
+
+        {/* Verification Success Notice */}
         {justVerified && !submitError && (
           <div className={s.verifiedBanner}>
-            <CheckCircle2 size={18} className={s.verifiedIcon} />
-            <span>Email verified! Sign in to get your 20 free credits over here.</span>
+            <CheckCircle2
+              size={18}
+              className={s.verifiedIcon}
+            />
+
+            <span>
+              Email verified! Sign in to get your 20 free credits.
+            </span>
           </div>
         )}
 
-        {/* Email Field Group */}
+        {/* Email */}
         <div className={s.inputGroup}>
-          <label className={s.label}>Email</label>
+          <label className={s.label}>
+            Email
+          </label>
+
           <input
             type="email"
             placeholder="me@example.com"
             value={form.email}
             onChange={update("email")}
-            className={`${s.input} ${errors.email ? s.inputError : ""}`}
+            className={`${s.input} ${
+              errors.email ? s.inputError : ""
+            }`}
             autoComplete="email"
           />
-          {errors.email && <p className={s.errorText}>{errors.email}</p>}
+
+          {errors.email && (
+            <p className={s.errorText}>
+              {errors.email}
+            </p>
+          )}
         </div>
 
-        {/* Password Label and Forgot Reset Link */}
+        {/* Password */}
         <div className={s.inputGroup}>
           <div className={s.passwordRow}>
-            <label className={s.label}>Password</label>
-            <Link to="/forgot-password" className={s.forgotLink}>
+            <label className={s.label}>
+              Password
+            </label>
+
+            <Link
+              to="/forgot-password"
+              className={s.forgotLink}
+            >
               Forgot your password?
             </Link>
           </div>
+
           <input
             type="password"
             placeholder="Password"
             value={form.password}
             onChange={update("password")}
-            className={`${s.input} ${errors.password ? s.inputError : ""}`}
+            className={`${s.input} ${
+              errors.password ? s.inputError : ""
+            }`}
             autoComplete="current-password"
           />
-          {errors.password && <p className={s.errorText}>{errors.password}</p>}
+
+          {errors.password && (
+            <p className={s.errorText}>
+              {errors.password}
+            </p>
+          )}
         </div>
 
-        {/* Submission Error Banner */}
-        {submitError && <p className={s.submitError}>{submitError}</p>}
+        {/* Submission Error */}
+        {submitError && (
+          <p className={s.submitError}>
+            {submitError}
+          </p>
+        )}
 
-        {/* Submit Actions */}
-        <button type="submit" disabled={loading} className={s.submitButton}>
-          {loading ? "Signing in..." : "Login"}
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={loading}
+          className={s.submitButton}
+        >
+          {loading
+            ? "Signing in..."
+            : "Login"}
         </button>
+
       </form>
     </AuthShell>
   );

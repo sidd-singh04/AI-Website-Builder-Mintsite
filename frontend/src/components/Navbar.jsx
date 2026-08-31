@@ -71,9 +71,17 @@ export default function Navbar() {
           className={s.userMenuTrigger}
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          <div className={s.avatar}>
-            {user?.name ? user.name.toUpperCase() : "U"}
-          </div>
+         <div className={s.avatar}>
+  {user?.name
+    ? user.name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase()
+    : "U"}
+</div>
 
           <span className={s.userName}>
             {user?.name}
