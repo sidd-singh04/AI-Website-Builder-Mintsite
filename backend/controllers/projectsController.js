@@ -284,10 +284,12 @@ export async function generate(req, res, next) {
 
     // First generation = 5 credits
     // Refinement = 2 credits
-    const isFirstTime = !project.html || project.html.length < 100;
+    const isFirstTime =
+      !project.html || project.html.length < 100;
+
     const cost = isFirstTime ? 5 : 2;
 
-    // Check credits BEFORE starting expensive AI request
+    // Check credits before starting AI request
     if (req.user.credits < cost) {
       return res.status(400).json({
         error: `You need at least ${cost} credits to generate the site`,
@@ -299,14 +301,8 @@ export async function generate(req, res, next) {
     console.log("📌 Cost:", cost);
     console.log("📌 Prompt:", prompt);
 
-    /*
-     * IMPORTANT:
-     * Save a version of the project before starting the AI request.
-     *
-     * This prevents two generate requests from using the same
-     * Mongoose document version.
-     */
-
+    // Add the current prompt temporarily so the AI
+    // can understand the latest user request.
     project.messages.push({
       role: "user",
       text: prompt,
@@ -314,7 +310,7 @@ export async function generate(req, res, next) {
 
     let enhancedPrompt = project.enhancedPrompt;
 
-    // Enhance prompt only on first generation
+    // Enhance only the first prompt
     if (isFirstTime) {
       console.log("🤖 Enhancing prompt...");
 
@@ -327,6 +323,7 @@ export async function generate(req, res, next) {
       console.log("✅ Enhanced prompt created");
     }
 
+    // Send complete conversation history to AI
     const history = project.messages.map((m) => ({
       role: m.role,
       text: m.text,
@@ -334,14 +331,11 @@ export async function generate(req, res, next) {
 
     console.log("🤖 Generating website...");
 
-    const outcome = await generateSite(
-  prompt,
-  {
-    previousHtml: project.html,
-    history,
-    originalPrompt: enhancedPrompt,
-  }
-);
+    const outcome = await generateSite(prompt, {
+      previousHtml: project.html,
+      history,
+      originalPrompt: enhancedPrompt,
+    });
 
     if (!outcome?.html || outcome.html.length < 100) {
       return res.status(500).json({
@@ -355,12 +349,7 @@ export async function generate(req, res, next) {
       "characters"
     );
 
-    /*
-     * Re-fetch the project AFTER AI generation.
-     *
-     * This is important because the original Mongoose document
-     * may now be stale if another request modified the project.
-     */
+    // Get the latest version of the project
     const latestProject = await Project.findOne({
       _id: project._id,
       user: req.user._id,
@@ -372,14 +361,12 @@ export async function generate(req, res, next) {
       });
     }
 
-    /*
-     * If the project already changed while AI was running,
-     * don't overwrite the newer version.
-     */
+    // Prevent overwriting a newer version
     if (
       latestProject.updatedAt &&
       project.updatedAt &&
-      latestProject.updatedAt.getTime() !== project.updatedAt.getTime()
+      latestProject.updatedAt.getTime() !==
+        project.updatedAt.getTime()
     ) {
       return res.status(409).json({
         error:
@@ -387,12 +374,33 @@ export async function generate(req, res, next) {
       });
     }
 
-    // Update latest project
+    // Update generated HTML
     latestProject.html = outcome.html;
 
     latestProject.enhancedPrompt =
       enhancedPrompt || latestProject.enhancedPrompt;
 
+    // Save the current user prompt.
+    // The first prompt already exists because it was saved
+    // when the project was created, so avoid duplicating it.
+    const lastMessage =
+      latestProject.messages[
+        latestProject.messages.length - 1
+      ];
+
+    const alreadySaved =
+      lastMessage &&
+      lastMessage.role === "user" &&
+      lastMessage.text === prompt;
+
+    if (!alreadySaved) {
+      latestProject.messages.push({
+        role: "user",
+        text: prompt,
+      });
+    }
+
+    // Save AI response
     latestProject.messages.push({
       role: "assistant",
       text:
@@ -400,19 +408,20 @@ export async function generate(req, res, next) {
         "Here is your generated website.",
     });
 
-    // Deduct credits from latest user state
-    const updatedUser = await req.user.constructor.findOneAndUpdate(
-      {
-        _id: req.user._id,
-        credits: { $gte: cost },
-      },
-      {
-        $inc: { credits: -cost },
-      },
-      {
-        new: true,
-      }
-    );
+    // Deduct credits safely
+    const updatedUser =
+      await req.user.constructor.findOneAndUpdate(
+        {
+          _id: req.user._id,
+          credits: { $gte: cost },
+        },
+        {
+          $inc: { credits: -cost },
+        },
+        {
+          new: true,
+        }
+      );
 
     if (!updatedUser) {
       return res.status(400).json({
@@ -423,10 +432,7 @@ export async function generate(req, res, next) {
     try {
       await latestProject.save();
     } catch (saveError) {
-      /*
-       * Project save failed after credit deduction.
-       * Refund the credits so the user is not charged.
-       */
+      // Refund credits if project save fails
       await req.user.constructor.findByIdAndUpdate(
         req.user._id,
         {
