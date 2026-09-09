@@ -15,7 +15,6 @@ import {
   User,
   Bot,
 } from "lucide-react";
-
 import { useAuth } from "../context/authContext.jsx";
 import { API } from "../utils/api.js";
 import toast from "react-hot-toast";
@@ -26,7 +25,6 @@ export default function BuilderPage() {
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
 
-  // State Management
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -40,12 +38,12 @@ export default function BuilderPage() {
 
   const chatEndRef = useRef(null);
 
-  // Fetch Project on Mount
+  // Load project when page opens
   useEffect(() => {
     loadProject();
   }, [id]);
 
-  // Scroll Chat to Bottom
+  // Automatically scroll chat to bottom
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({
@@ -54,9 +52,11 @@ export default function BuilderPage() {
     }
   }, [project?.messages, generating]);
 
-  // Auto-save Project Name
+  // Auto-save project name
   useEffect(() => {
-    if (!project || projectName === project.name) return;
+    if (!project || projectName === project.name) {
+      return;
+    }
 
     const timer = setTimeout(() => {
       savePatch({ name: projectName });
@@ -65,7 +65,7 @@ export default function BuilderPage() {
     return () => clearTimeout(timer);
   }, [projectName]);
 
-  // Initial Run
+  // Automatically generate website for a new project
   useEffect(() => {
     if (
       project &&
@@ -76,7 +76,7 @@ export default function BuilderPage() {
     }
   }, [project]);
 
-  // Load Project
+  // Load project
   const loadProject = async () => {
     setLoading(true);
     setLoadError("");
@@ -99,15 +99,20 @@ export default function BuilderPage() {
     }
   };
 
-  // Generate / Refine Code
+  // Generate / Refine website
   const runGenerate = async (promptText) => {
     if (generating) return;
+
+    const trimmedPrompt = promptText.trim();
+
+    if (!trimmedPrompt) return;
 
     const isFirstTime =
       !project?.html || project.html.length < 100;
 
     const cost = isFirstTime ? 5 : 2;
 
+    // Check credits
     if ((user?.credits ?? 0) < cost) {
       toast.error(
         `You need at least ${cost} credits to modify the site!`
@@ -117,24 +122,71 @@ export default function BuilderPage() {
       return;
     }
 
+    /*
+      IMPORTANT:
+      Show user's message immediately in the chat.
+      We don't wait for the backend or AI response.
+    */
+    setProject((currentProject) => {
+      if (!currentProject) {
+        return currentProject;
+      }
+
+      return {
+        ...currentProject,
+        messages: [
+          ...(currentProject.messages || []),
+          {
+            role: "user",
+            text: trimmedPrompt,
+          },
+        ],
+      };
+    });
+
     setGenerating(true);
 
     try {
       const res = await API.post(
         `/projects/${id}/generate`,
         {
-          prompt: promptText,
+          prompt: trimmedPrompt,
         }
       );
 
+      /*
+        Backend returns the latest project.
+        This contains:
+        - user's prompt
+        - AI response
+        - updated HTML
+      */
       setProject(res.data.project);
 
+      // Update credits
       if (res.data.user) {
         updateUser(res.data.user);
       }
 
       toast.success("AI generated successfully!");
     } catch (err) {
+      /*
+        If AI generation fails, reload project
+        so the temporary user message disappears.
+      */
+      try {
+        const projectRes = await API.get(
+          `/projects/${id}`
+        );
+
+        setProject(projectRes.data.project);
+      } catch (reloadError) {
+        console.error(
+          "Failed to reload project:",
+          reloadError
+        );
+      }
+
       toast.error(
         err.response?.data?.error ||
           "AI Generation failed"
@@ -144,7 +196,7 @@ export default function BuilderPage() {
     }
   };
 
-  // Safe Patch Update
+  // Save project changes
   const savePatch = async (fields) => {
     setSaving(true);
     setSaveError("");
@@ -167,7 +219,7 @@ export default function BuilderPage() {
     }
   };
 
-  // Download HTML
+  // Download generated HTML
   const handleDownload = () => {
     if (!project?.html) {
       toast.error("No code generated yet");
@@ -204,7 +256,7 @@ export default function BuilderPage() {
     );
   };
 
-  // Publish / Unpublish
+  // Publish / Unpublish project
   const handlePublish = async () => {
     if (!project) return;
 
@@ -230,18 +282,24 @@ export default function BuilderPage() {
     }
   };
 
-  // Chat Submit
+  // Submit chat prompt
   const handleChatSubmit = (e) => {
     e.preventDefault();
 
-    if (!prompt.trim() || generating) return;
+    const trimmedPrompt = prompt.trim();
 
-    runGenerate(prompt.trim());
+    if (!trimmedPrompt || generating) {
+      return;
+    }
 
+    // Clear input immediately
     setPrompt("");
+
+    // Send prompt to AI
+    runGenerate(trimmedPrompt);
   };
 
-  // Render Message Content
+  // Format assistant messages
   const renderMessageContent = (text) => {
     if (!text) return null;
 
@@ -294,7 +352,7 @@ export default function BuilderPage() {
     });
   };
 
-  // Loading Screen
+  // Loading screen
   if (loading) {
     return (
       <div className={s.centerScreen}>
@@ -310,7 +368,7 @@ export default function BuilderPage() {
     );
   }
 
-  // Error Screen
+  // Error screen
   if (loadError) {
     return (
       <div className={s.centerScreen}>
@@ -342,11 +400,11 @@ export default function BuilderPage() {
 
   return (
     <div className={s.root}>
-
       {/* TOP BUILDER TOOLBAR */}
-      <header className={s.topBar}>
 
-        {/* LEFT */}
+      <header className={s.topBar}>
+        {/* LEFT SIDE */}
+
         <div className={s.toolbarLeft}>
           <Link
             to="/dashboard"
@@ -418,6 +476,7 @@ export default function BuilderPage() {
         </div>
 
         {/* DEVICE SELECTORS */}
+
         <div className={s.toolbarCenter}>
           <button
             className={`${s.deviceBtn} ${
@@ -462,9 +521,9 @@ export default function BuilderPage() {
           </button>
         </div>
 
-        {/* ACTIONS */}
-        <div className={s.toolbarRight}>
+        {/* ACTION BUTTONS */}
 
+        <div className={s.toolbarRight}>
           <button
             className={s.actionBtn}
             onClick={handleDownload}
@@ -502,15 +561,16 @@ export default function BuilderPage() {
                 : "Publish"}
             </span>
           </button>
-
         </div>
       </header>
 
-      {/* MAIN LAYOUT */}
-      <div className={s.workspaceGrid}>
+      {/* MAIN WORKSPACE */}
 
-        {/* LEFT CHAT */}
+      <div className={s.workspaceGrid}>
+        {/* CHAT SIDEBAR */}
+
         <aside className={s.chatSidebar}>
+          {/* CHAT HEADER */}
 
           <div className={s.chatHeader}>
             <Sparkles
@@ -541,6 +601,8 @@ export default function BuilderPage() {
               </span>
             </div>
           </div>
+
+          {/* CHAT MESSAGES */}
 
           <div
             className={
@@ -599,6 +661,8 @@ export default function BuilderPage() {
               }
             )}
 
+            {/* AI GENERATING MESSAGE */}
+
             {generating && (
               <div
                 className={`${s.messageRow} ${s.assistantMsgRow}`}
@@ -645,6 +709,7 @@ export default function BuilderPage() {
           </div>
 
           {/* CHAT INPUT */}
+
           <form
             onSubmit={handleChatSubmit}
             className={s.chatInputForm}
@@ -675,7 +740,8 @@ export default function BuilderPage() {
           </form>
         </aside>
 
-        {/* RIGHT RENDER CANVAS */}
+        {/* WEBSITE PREVIEW */}
+
         <main className={s.renderCanvas}>
           <div
             className={`${s.canvasViewport} ${
@@ -718,7 +784,6 @@ export default function BuilderPage() {
             )}
           </div>
         </main>
-
       </div>
     </div>
   );
