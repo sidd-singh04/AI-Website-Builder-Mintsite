@@ -1,11 +1,9 @@
-// Small shared UI building blocks, all in one file: Card, Logo, Input, and the iframe thumbnail.
-
 import { forwardRef, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff, ImageOff } from "lucide-react";
 import { safePreviewHtml } from "../utils/safePreview";
 import logo from "./logo.svg";
-import { sharedUiStyles as s } from "../assets/dummyStyles";
+import { sharedUiStyles as s } from "../assets/dummyStyles.jsx";
 
 // ── Card ────────────────────────────────────────────────────────────────────
 // Reusable box container with optional hover styling.
