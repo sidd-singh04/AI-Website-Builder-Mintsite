@@ -13,7 +13,7 @@ import {
 
 import { useAuth } from "../context/authContext.jsx";
 import { API } from "../utils/api.js";
-import { PageBackdrop } from "../assets/UI.jsx";
+import { PageBackdrop } from "../assets/ui.jsx";
 import Footer from "../components/Footer.jsx";
 import toast from "react-hot-toast";
 import s from "../styles/PricingPage.module.css";

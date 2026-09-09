@@ -10,7 +10,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useAuth } from "../context/authContext.jsx";
-import { Logo } from "../assets/UI.jsx";
+import { Logo } from "../assets/ui.jsx";
 import s from "../styles/Navbar.module.css";
 
 // Standard navigation links

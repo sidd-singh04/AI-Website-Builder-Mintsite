@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "../context/authContext.jsx";
-import { PageBackdrop } from "../assets/UI.jsx";
+import { PageBackdrop } from "../assets/ui.jsx";
 import Footer from "../components/Footer.jsx";
 import s from "../styles/LandingPage.module.css";
 

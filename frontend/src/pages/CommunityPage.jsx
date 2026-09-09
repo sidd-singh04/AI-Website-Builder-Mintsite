@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Heart, Eye, ExternalLink, Calendar, Loader2, Sparkles, AlertCircle } from "lucide-react";
 import { useAuth } from "../context/authContext.jsx";
 import { API } from "../utils/api.js";
-import { PageBackdrop } from "../assets/UI.jsx";
+import { PageBackdrop } from "../assets/ui.jsx";
 import Footer from "../components/Footer.jsx";
 import toast from "react-hot-toast";
 import s from "../styles/CommunityPage.module.css";

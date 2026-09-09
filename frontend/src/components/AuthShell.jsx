@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { Logo, PageBackdrop } from "../assets/UI.jsx";
+import { Logo, PageBackdrop } from "../assets/ui.jsx";
 import s from "../styles/AuthShell.module.css";
 
 export default function AuthShell({ title, subtitle, children, footer }) {
