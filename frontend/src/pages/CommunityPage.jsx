@@ -1,5 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+} from "react";
+
 import { useNavigate } from "react-router-dom";
+
 import {
   Heart,
   Eye,
@@ -9,45 +14,103 @@ import {
   Sparkles,
   AlertCircle,
 } from "lucide-react";
+
 import { useAuth } from "../context/authContext.jsx";
+
 import { API } from "../utils/api.js";
+
 import { PageBackdrop } from "../assets/ui.jsx";
+
 import Footer from "../components/Footer.jsx";
+
 import toast from "react-hot-toast";
+
 import s from "../styles/CommunityPage.module.css";
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FILTERS
+// ═══════════════════════════════════════════════════════════════════════════
 
 const filters = [
   {
     key: "new",
     label: "Newest First",
   },
+
   {
     key: "views",
     label: "Most Viewed",
   },
+
   {
     key: "likes",
     label: "Most Loved",
   },
 ];
 
+// ═══════════════════════════════════════════════════════════════════════════
+// DATE FORMATTER
+// ═══════════════════════════════════════════════════════════════════════════
+
+function formatProjectDate(project) {
+  // Prefer published date
+  const dateValue =
+    project?.publishedAt ||
+    project?.createdAt;
+
+  if (!dateValue) {
+    return "Unknown date";
+  }
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Unknown date";
+  }
+
+  return date.toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// COMMUNITY PAGE
+// ═══════════════════════════════════════════════════════════════════════════
+
 export default function CommunityPage() {
   const navigate = useNavigate();
+
   const { user } = useAuth();
 
   const isLoggedIn = Boolean(user);
 
-  const [sort, setSort] = useState("new");
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [sort, setSort] =
+    useState("new");
 
-  // Load community projects whenever filter changes
+  const [projects, setProjects] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // LOAD COMMUNITY PROJECTS
+  // ═══════════════════════════════════════════════════════════════════════
+
   useEffect(() => {
     let cancelled = false;
 
     async function loadCommunityProjects() {
       setLoading(true);
+
       setError("");
 
       try {
@@ -55,15 +118,24 @@ export default function CommunityPage() {
           `/community?sort=${sort}`
         );
 
-        if (cancelled) return;
+        if (cancelled) {
+          return;
+        }
 
         const fetchedProjects =
-          res.data.projects || [];
+          res.data?.projects || [];
+
+        console.log(
+          "Community projects:",
+          fetchedProjects
+        );
 
         /*
-          Backend should already return the correct
-          order. We also sort on frontend as a fallback.
+          Backend normally handles sorting.
+
+          We also sort on frontend as a fallback.
         */
+
         const sortedProjects = [
           ...fetchedProjects,
         ].sort((a, b) => {
@@ -82,15 +154,30 @@ export default function CommunityPage() {
           }
 
           // Newest first
-          return (
-            new Date(b.createdAt || 0) -
-            new Date(a.createdAt || 0)
-          );
+          const dateA =
+            new Date(
+              a.publishedAt ||
+                a.createdAt ||
+                0
+            ).getTime();
+
+          const dateB =
+            new Date(
+              b.publishedAt ||
+                b.createdAt ||
+                0
+            ).getTime();
+
+          return dateB - dateA;
         });
 
-        setProjects(sortedProjects);
+        setProjects(
+          sortedProjects
+        );
       } catch (err) {
-        if (cancelled) return;
+        if (cancelled) {
+          return;
+        }
 
         setError(
           err.response?.data?.error ||
@@ -110,7 +197,10 @@ export default function CommunityPage() {
     };
   }, [sort]);
 
-  // Handle Like / Unlike
+  // ═══════════════════════════════════════════════════════════════════════
+  // LIKE / UNLIKE
+  // ═══════════════════════════════════════════════════════════════════════
+
   const handleLike = async (id) => {
     if (!isLoggedIn) {
       toast.error(
@@ -118,71 +208,84 @@ export default function CommunityPage() {
       );
 
       navigate("/login");
+
       return;
     }
 
-    const currentProject = projects.find(
-      (p) => p.id === id
-    );
+    const currentProject =
+      projects.find(
+        (p) => p.id === id
+      );
 
-    if (!currentProject) return;
+    if (!currentProject) {
+      return;
+    }
 
-    // User cannot like own project
     if (currentProject.isOwn) {
       toast.error(
         "You cannot like your own project!"
       );
+
       return;
     }
 
-    // Save previous state
-    const previousProjects = [...projects];
+    const previousProjects = [
+      ...projects,
+    ];
 
     // Optimistic update
-    setProjects((oldProjects) =>
-      oldProjects.map((p) => {
-        if (p.id !== id) {
-          return p;
-        }
+    setProjects(
+      (oldProjects) =>
+        oldProjects.map((p) => {
+          if (p.id !== id) {
+            return p;
+          }
 
-        const nextLiked = !p.likedByMe;
+          const nextLiked =
+            !p.likedByMe;
 
-        return {
-          ...p,
-          likedByMe: nextLiked,
-          likes: Math.max(
-            0,
-            (p.likes ?? 0) +
-              (nextLiked ? 1 : -1)
-          ),
-        };
-      })
+          return {
+            ...p,
+
+            likedByMe:
+              nextLiked,
+
+            likes: Math.max(
+              0,
+              (p.likes ?? 0) +
+                (nextLiked ? 1 : -1)
+            ),
+          };
+        })
     );
 
     try {
-      const res = await API.post(
-        `/community/${id}/like`
-      );
+      const res =
+        await API.post(
+          `/community/${id}/like`
+        );
 
       const {
         likes,
         likedByMe,
       } = res.data;
 
-      setProjects((oldProjects) =>
-        oldProjects.map((p) =>
-          p.id === id
-            ? {
-                ...p,
-                likes,
-                likedByMe,
-              }
-            : p
-        )
+      setProjects(
+        (oldProjects) =>
+          oldProjects.map((p) =>
+            p.id === id
+              ? {
+                  ...p,
+                  likes,
+                  likedByMe,
+                }
+              : p
+          )
       );
     } catch (err) {
-      // Restore previous state
-      setProjects(previousProjects);
+      setProjects(
+        previousProjects
+      );
 
       toast.error(
         err.response?.data?.error ||
@@ -191,61 +294,90 @@ export default function CommunityPage() {
     }
   };
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // UI
+  // ═══════════════════════════════════════════════════════════════════════
+
   return (
     <div className={s.root}>
       <PageBackdrop />
 
       {/* HERO */}
 
-      <section className={s.heroSection}>
-        <div className={s.heroInner}>
-          <h1 className={s.heroTitle}>
+      <section
+        className={s.heroSection}
+      >
+        <div
+          className={s.heroInner}
+        >
+          <h1
+            className={s.heroTitle}
+          >
             Community Showcase
           </h1>
 
-          <p className={s.heroSub}>
-            Real projects published by MintSite
-            users. Explore websites created with
-            AI and discover what others are
-            building.
+          <p
+            className={s.heroSub}
+          >
+            Real projects published by
+            MintSite users. Explore
+            websites created with AI
+            and discover what others
+            are building.
           </p>
         </div>
       </section>
 
       {/* WORKSPACE */}
 
-      <section className={s.workspaceArea}>
+      <section
+        className={s.workspaceArea}
+      >
         {/* FILTER BAR */}
 
         <div className={s.filterBar}>
-          {filters.map((filter) => (
-            <button
-              key={filter.key}
-              type="button"
-              onClick={() =>
-                setSort(filter.key)
-              }
-              className={`${s.filterBtn} ${
-                sort === filter.key
-                  ? s.filterBtnActive
-                  : s.filterBtnInactive
-              }`}
-            >
-              {filter.label}
-            </button>
-          ))}
+          {filters.map(
+            (filter) => (
+              <button
+                key={filter.key}
+                type="button"
+                onClick={() =>
+                  setSort(
+                    filter.key
+                  )
+                }
+                className={`${
+                  s.filterBtn
+                } ${
+                  sort ===
+                  filter.key
+                    ? s.filterBtnActive
+                    : s.filterBtnInactive
+                }`}
+              >
+                {filter.label}
+              </button>
+            )
+          )}
         </div>
 
         {/* LOADING */}
 
         {loading ? (
-          <div className={s.cardMessage}>
+          <div
+            className={
+              s.cardMessage
+            }
+          >
             <Loader2
-              className={s.loadingSpinner}
+              className={
+                s.loadingSpinner
+              }
             />
 
             <span>
-              Loading community creations...
+              Loading community
+              creations...
             </span>
           </div>
         ) : error ? (
@@ -259,26 +391,42 @@ export default function CommunityPage() {
             <span>{error}</span>
 
             <button
-              className={s.createBtn}
+              className={
+                s.createBtn
+              }
               onClick={() =>
-                setSort(sort)
+                setSort(
+                  sort
+                )
               }
             >
               Try Again
             </button>
           </div>
-        ) : projects.length === 0 ? (
+        ) : projects.length ===
+          0 ? (
           /* EMPTY */
 
-          <div className={s.cardMessage}>
-            <p className={s.emptyText}>
-              No published projects yet. Be the
-              first to build and publish your
+          <div
+            className={
+              s.cardMessage
+            }
+          >
+            <p
+              className={
+                s.emptyText
+              }
+            >
+              No published projects
+              yet. Be the first to
+              build and publish your
               website!
             </p>
 
             <button
-              className={s.createBtn}
+              className={
+                s.createBtn
+              }
               onClick={() =>
                 navigate(
                   isLoggedIn
@@ -294,20 +442,24 @@ export default function CommunityPage() {
           /* PROJECT GRID */
 
           <div className={s.grid}>
-            {projects.map((project) => (
-              <CommunityCard
-                key={project.id}
-                project={project}
-                onLike={() =>
-                  handleLike(project.id)
-                }
-                onOpen={() =>
-                  navigate(
-                    `/preview/${project.id}`
-                  )
-                }
-              />
-            ))}
+            {projects.map(
+              (project) => (
+                <CommunityCard
+                  key={project.id}
+                  project={project}
+                  onLike={() =>
+                    handleLike(
+                      project.id
+                    )
+                  }
+                  onOpen={() =>
+                    navigate(
+                      `/preview/${project.id}`
+                    )
+                  }
+                />
+              )
+            )}
           </div>
         )}
       </section>
@@ -317,9 +469,9 @@ export default function CommunityPage() {
   );
 }
 
-// =====================================================
+// ═══════════════════════════════════════════════════════════════════════════
 // COMMUNITY CARD
-// =====================================================
+// ═══════════════════════════════════════════════════════════════════════════
 
 function CommunityCard({
   project,
@@ -331,12 +483,24 @@ function CommunityCard({
       {/* WEBSITE PREVIEW */}
 
       <div
-        className={s.cardImageArea}
+        className={
+          s.cardImageArea
+        }
         onClick={onOpen}
       >
-        <div className={s.cardOverlay}>
-          <div className={s.viewLiveBadge}>
-            <ExternalLink size={14} />
+        <div
+          className={
+            s.cardOverlay
+          }
+        >
+          <div
+            className={
+              s.viewLiveBadge
+            }
+          >
+            <ExternalLink
+              size={14}
+            />
 
             <span>
               View Website
@@ -344,7 +508,11 @@ function CommunityCard({
           </div>
         </div>
 
-        <div className={s.mockBrowser}>
+        <div
+          className={
+            s.mockBrowser
+          }
+        >
           {/* Browser Header */}
 
           <div
@@ -353,7 +521,9 @@ function CommunityCard({
             }
           >
             <span
-              className={s.browserDot}
+              className={
+                s.browserDot
+              }
               style={{
                 backgroundColor:
                   "#ef4444",
@@ -361,7 +531,9 @@ function CommunityCard({
             />
 
             <span
-              className={s.browserDot}
+              className={
+                s.browserDot
+              }
               style={{
                 backgroundColor:
                   "#f59e0b",
@@ -369,7 +541,9 @@ function CommunityCard({
             />
 
             <span
-              className={s.browserDot}
+              className={
+                s.browserDot
+              }
               style={{
                 backgroundColor:
                   "#10b981",
@@ -381,8 +555,12 @@ function CommunityCard({
 
           {project.html ? (
             <iframe
-              title={project.name}
-              srcDoc={project.html}
+              title={
+                project.name
+              }
+              srcDoc={
+                project.html
+              }
               className={
                 s.websitePreview
               }
@@ -414,19 +592,33 @@ function CommunityCard({
 
       {/* PROJECT DETAILS */}
 
-      <div className={s.cardBody}>
-        <div className={s.cardHeader}>
+      <div
+        className={s.cardBody}
+      >
+        <div
+          className={
+            s.cardHeader
+          }
+        >
           <h3
-            className={s.projectName}
+            className={
+              s.projectName
+            }
             onClick={onOpen}
           >
             {project.name}
           </h3>
 
-          <div className={s.badgeRow}>
+          <div
+            className={
+              s.badgeRow
+            }
+          >
             {project.isOwn && (
               <span
-                className={s.ownBadge}
+                className={
+                  s.ownBadge
+                }
               >
                 Mine
               </span>
@@ -434,9 +626,15 @@ function CommunityCard({
           </div>
         </div>
 
-        <div className={s.cardMeta}>
+        <div
+          className={
+            s.cardMeta
+          }
+        >
           <span
-            className={s.authorLabel}
+            className={
+              s.authorLabel
+            }
           >
             By{" "}
             {project.author ||
@@ -444,16 +642,18 @@ function CommunityCard({
           </span>
 
           <span
-            className={s.dateLabel}
+            className={
+              s.dateLabel
+            }
           >
-            <Calendar size={12} />
+            <Calendar
+              size={12}
+            />
 
             <span>
-              {project.createdAt
-                ? new Date(
-                    project.createdAt
-                  ).toLocaleDateString()
-                : "Unknown date"}
+              {formatProjectDate(
+                project
+              )}
             </span>
           </span>
         </div>
@@ -461,22 +661,36 @@ function CommunityCard({
 
       {/* METRICS */}
 
-      <div className={s.cardFooter}>
-        <div className={s.statsItem}>
+      <div
+        className={
+          s.cardFooter
+        }
+      >
+        <div
+          className={
+            s.statsItem
+          }
+        >
           <Eye
             size={15}
-            className={s.statIcon}
+            className={
+              s.statIcon
+            }
           />
 
           <span>
-            {project.views ?? 0} Views
+            {project.views ??
+              0}{" "}
+            Views
           </span>
         </div>
 
         <button
           type="button"
           onClick={onLike}
-          disabled={project.isOwn}
+          disabled={
+            project.isOwn
+          }
           className={`${s.likeBtn} ${
             project.likedByMe
               ? s.liked
@@ -502,7 +716,8 @@ function CommunityCard({
           />
 
           <span>
-            {project.likes ?? 0}
+            {project.likes ??
+              0}
           </span>
         </button>
       </div>
