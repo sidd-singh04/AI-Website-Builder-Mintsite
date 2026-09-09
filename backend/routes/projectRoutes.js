@@ -11,10 +11,7 @@ import {
 
 import { requireAuth } from "../middleware/auth.js";
 
-import {
-  githubRoute,
-  verselRoute
-} from "./projectDeploy.js";
+
 
 const projectRouter = express.Router();
 
@@ -35,12 +32,5 @@ projectRouter.delete("/:id", requireAuth, remove);
 
 // 6. Generate/Refine Website Code using AI
 projectRouter.post("/:id/generate", requireAuth, generate);
-
-// 7. GitHub Upload Integration
-projectRouter.post("/:id/github", requireAuth, githubRoute);
-
-// 8. Vercel Live Deployment
-projectRouter.post("/:id/deploy", requireAuth, verselRoute);
-
 
 export default projectRouter;

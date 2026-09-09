@@ -1,72 +1,271 @@
 .footer {
-  background-color: #050507;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 3rem 1.5rem;
+  position: relative;
+  background: #050507;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 4.5rem 1.5rem 2rem;
   margin-top: auto;
+  overflow: hidden;
 }
 
+/* =========================
+   BACKGROUND GLOW
+========================= */
+
+.glow {
+  position: absolute;
+  width: 500px;
+  height: 250px;
+  top: -180px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse,
+    rgba(124, 58, 237, 0.18),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+
 .inner {
-  max-width: 1280px;
+  position: relative;
+  z-index: 1;
+
+  max-width: 1200px;
   margin: 0 auto;
+
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  text-align: center;
 }
+
+/* =========================
+   TOP SECTION
+========================= */
+
+.top {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* =========================
+   BRAND
+========================= */
 
 .brand {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  max-width: 380px;
+}
+
+.logoLink {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  text-decoration: none;
+  margin-bottom: 1rem;
 }
 
 .brandText {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 13.5px;
-  max-width: 400px;
-  line-height: 1.5;
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 14px;
+  line-height: 1.65;
+
+  max-width: 340px;
+}
+
+/* =========================
+   AI BADGE
+========================= */
+
+.aiBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: 1.25rem;
+  padding: 6px 11px;
+
+  color: #c4b5fd;
+  background: rgba(124, 58, 237, 0.08);
+
+  border: 1px solid rgba(124, 58, 237, 0.18);
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.aiBadge svg {
+  color: #a855f7;
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+}
+
+.navTitle {
+  margin: 0 0 1rem;
+
+  color: rgba(255, 255, 255, 0.9);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .nav {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .navLink {
-  color: rgba(255, 255, 255, 0.6);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  width: fit-content;
+
+  color: rgba(255, 255, 255, 0.48);
+
   text-decoration: none;
+
   font-size: 13.5px;
   font-weight: 500;
-  transition: color 0.15s ease;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.navIcon {
+  opacity: 0;
+  transform: translate(-3px, 3px);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .navLink:hover {
   color: #ffffff;
+  transform: translateX(2px);
+}
+
+.navLink:hover .navIcon {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* =========================
+   DIVIDER
+========================= */
+
+.divider {
+  width: 100%;
+  height: 1px;
+
+  margin: 3rem 0 1.5rem;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+}
+
+/* =========================
+   BOTTOM SECTION
+========================= */
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+
+  text-align: center;
 }
 
 .copyright {
-  color: rgba(255, 255, 255, 0.3);
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.28);
   font-size: 12px;
-  margin-top: 0.5rem;
 }
 
+.madeWith {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 12px;
+}
+
+.madeWith span {
+  color: rgba(168, 85, 247, 0.8);
+}
+
+/* =========================
+   TABLET / DESKTOP
+========================= */
+
 @media (min-width: 768px) {
-  .inner {
+  .footer {
+    padding: 5rem 2rem 2rem;
+  }
+
+  .top {
     flex-direction: row;
     justify-content: space-between;
-    text-align: left;
-    gap: 0;
-  }
-  
-  .brand {
     align-items: flex-start;
+
+    gap: 4rem;
   }
-  
-  .nav {
-    gap: 2rem;
+
+  .navigation {
+    min-width: 180px;
+  }
+
+  .bottom {
+    flex-direction: row;
+    justify-content: space-between;
+
+    text-align: left;
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 3.5rem 1.25rem 1.75rem;
+  }
+
+  .brandText {
+    font-size: 13.5px;
+  }
+
+  .navigation {
+    margin-top: 0.5rem;
+  }
+
+  .divider {
+    margin: 2.5rem 0 1.25rem;
   }
 }

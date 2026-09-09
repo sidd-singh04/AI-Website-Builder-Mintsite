@@ -460,7 +460,7 @@ function featuresPage({ brand }) {
         <div class="card"><div class="feat-icon">📱</div><h3>Production ready</h3><p class="muted">Semantic HTML, accessible markup, fully responsive.</p></div>
         <div class="card"><div class="feat-icon">🎨</div><h3>Beautiful by default</h3><p class="muted">Crafted typography, palette-aware gradients, motion.</p></div>
         <div class="card"><div class="feat-icon">🔒</div><h3>Secure & private</h3><p class="muted">Your data, your control — encrypted end to end.</p></div>
-        <div class="card"><div class="feat-icon">🌍</div><h3>One-click deploy</h3><p class="muted">Push to GitHub Pages, Vercel, or download static HTML.</p></div>
+       
       </div>
     </section>
   </main>`;

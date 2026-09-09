@@ -177,13 +177,7 @@ export const builderPageStyles = {
   actionButtonIcon: "w-3.5 h-3.5",
   actionButtonText: "hidden sm:inline",
 
-  githubButton:
-    "hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium text-white/80 rounded-md hover:bg-white/5 disabled:opacity-40 transition",
-
-  publishButtonBase: "flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-[13px] font-semibold transition",
-  publishButtonPublished: "bg-emerald-500 hover:bg-emerald-400 text-white",
-  publishButtonUnpublished: "", // uses gradientButton
-  publishIcon: "w-3.5 h-3.5",
+ 
 
   // ─── SaveStatus ──────────────────────────────────────────
   saveStatusGenerating:

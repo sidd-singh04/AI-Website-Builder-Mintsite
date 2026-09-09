@@ -14,7 +14,6 @@ export const API = axios.create({
   },
 });
 
-
 // ============================================================
 // ADD TOKEN TO EVERY REQUEST
 // ============================================================
@@ -33,7 +32,6 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-
 // ============================================================
 // GLOBAL RESPONSE ERROR HANDLER
 // ============================================================
@@ -44,14 +42,8 @@ API.interceptors.response.use(
   (err) => {
     const url = err.config?.url || "";
 
-    // GitHub / Vercel endpoints should not
-    // automatically log the user out on 401.
-    const isThirdParty =
-      /(?:deploy|github)$/i.test(url);
-
     if (
-      err.response?.status === 401 &&
-      !isThirdParty
+      err.response?.status === 401
     ) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
@@ -67,7 +59,6 @@ API.interceptors.response.use(
   }
 );
 
-
 // ============================================================
 // ERROR HELPER
 // ============================================================
@@ -77,11 +68,12 @@ export const apiError = (err) =>
   err?.message ||
   "Something went wrong";
 
+// ============================================================
+// RESPONSE BODY HELPER
+// ============================================================
 
-// Helper to return only response.data
 const body = (promise) =>
   promise.then((res) => res.data);
-
 
 // ============================================================
 // AUTH
@@ -94,7 +86,6 @@ export const register = (data) =>
   body(
     API.post("/auth/register", data)
   );
-
 
 // Verify registration OTP
 export const registerVerify = (
@@ -111,7 +102,6 @@ export const registerVerify = (
     )
   );
 
-
 // Resend registration OTP
 export const registerResend = (
   email
@@ -125,20 +115,17 @@ export const registerResend = (
     )
   );
 
-
 // Login
 export const login = (data) =>
   body(
     API.post("/auth/login", data)
   );
 
-
 // Get logged-in user
 export const getMe = () =>
   body(
     API.get("/auth/me")
   );
-
 
 // Update profile
 export const updateProfile = (
@@ -151,7 +138,6 @@ export const updateProfile = (
     )
   );
 
-
 // Change password
 export const changePassword = (
   data
@@ -163,20 +149,17 @@ export const changePassword = (
     )
   );
 
-
 // Delete account
 export const deleteMyAccount = () =>
   body(
     API.delete("/auth/me")
   );
 
-
 // Contribution history
 export const getContributions = () =>
   body(
     API.get("/auth/me/contributions")
   );
-
 
 // ============================================================
 // FORGOT PASSWORD
@@ -194,7 +177,6 @@ export const forgotRequest = (
     )
   );
 
-
 export const forgotVerifyCode = (
   email,
   code
@@ -208,7 +190,6 @@ export const forgotVerifyCode = (
       }
     )
   );
-
 
 export const forgotReset = (
   email,
@@ -226,7 +207,6 @@ export const forgotReset = (
     )
   );
 
-
 // ============================================================
 // PROJECTS
 // Backend:
@@ -238,7 +218,6 @@ export const getProjects = () =>
     API.get("/projects")
   );
 
-
 export const createProject = (
   data
 ) =>
@@ -249,7 +228,6 @@ export const createProject = (
     )
   );
 
-
 export const getProject = (
   id
 ) =>
@@ -258,7 +236,6 @@ export const getProject = (
       `/projects/${id}`
     )
   );
-
 
 export const updateProject = (
   id,
@@ -271,7 +248,6 @@ export const updateProject = (
     )
   );
 
-
 export const deleteProject = (
   id
 ) =>
@@ -280,7 +256,6 @@ export const deleteProject = (
       `/projects/${id}`
     )
   );
-
 
 export const generateProject = (
   id,
@@ -294,31 +269,6 @@ export const generateProject = (
       }
     )
   );
-
-
-export const uploadToGithub = (
-  id,
-  data
-) =>
-  body(
-    API.post(
-      `/projects/${id}/github`,
-      data
-    )
-  );
-
-
-export const deployToVercel = (
-  id,
-  data
-) =>
-  body(
-    API.post(
-      `/projects/${id}/deploy`,
-      data
-    )
-  );
-
 
 // ============================================================
 // COMMUNITY
@@ -335,7 +285,6 @@ export const getCommunity = (
     )
   );
 
-
 export const getCommunityProject = (
   id
 ) =>
@@ -345,7 +294,6 @@ export const getCommunityProject = (
     )
   );
 
-
 export const likeCommunityProject = (
   id
 ) =>
@@ -354,7 +302,6 @@ export const likeCommunityProject = (
       `/community/${id}/like`
     )
   );
-
 
 // ============================================================
 // PAYMENTS
@@ -369,7 +316,6 @@ export const getPackages = () =>
     )
   );
 
-
 export const createOrder = (
   packageId
 ) =>
@@ -382,18 +328,14 @@ export const createOrder = (
     )
   );
 
-
-export const verifyPayment = (data) =>
+export const verifyPayment = (
+  data
+) =>
   body(
     API.post(
       "/payments/verify-payment",
       data
     )
   );
-
-
-// ============================================================
-// DEFAULT EXPORT
-// ============================================================
 
 export default API;

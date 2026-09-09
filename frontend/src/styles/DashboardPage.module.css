@@ -8,15 +8,16 @@
   color: #ffffff;
 }
 
-/* 1. TOP STATS HEADER BAR */
+/* ============================================================
+   1. TOP HEADER
+============================================================ */
+
 .dashboardHeader {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   justify-content: space-between;
 }
-
-
 
 .headerTitle {
   font-size: 28px;
@@ -29,8 +30,6 @@
   margin-bottom: 0.25rem;
   line-height: 1.3;
 }
-
-
 
 .headerSubtitle {
   font-size: 14.5px;
@@ -70,7 +69,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #f59e0b; /* Amber */
+  color: #f59e0b;
 }
 
 .sparkIcon {
@@ -115,159 +114,50 @@
   color: #818cf8;
 }
 
-
-/* 2. GITHUB STYLE CONTRIBUTION SECTION */
-.sectionCard {
-  background-color: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(12px);
-}
+/* ============================================================
+   2. COMMON SECTION HEADER
+============================================================ */
 
 .sectionHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .sectionTitle {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 0.25rem;
+  letter-spacing: -0.2px;
+  margin-bottom: 0.35rem;
+  line-height: 1.3;
 }
 
 .sectionSubtitle {
   font-size: 13.5px;
   color: rgba(255, 255, 255, 0.45);
   line-height: 1.5;
+  max-width: 650px;
 }
 
-.totalContribCount {
-  font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.6);
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 6px 14px;
-  border-radius: 9999px;
-  white-space: nowrap;
-}
+/* ============================================================
+   3. GENERATION PROMPT SECTION
+============================================================ */
 
-/* Scrollable Graph grid */
-.gridContainer {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-  position: relative;
-}
-
-.gridDayLabels {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 4px 0;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.35);
-  width: 28px;
-  user-select: none;
-}
-
-.gridScrollWrapper {
-  flex: 1;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-
-/* 53 Columns x 7 Rows structure */
-.gridColumns {
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(7, 10px);
-  grid-template-columns: repeat(53, 10px);
-  gap: 3.5px;
-  width: max-content;
-}
-
-.gridCell {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  transition: transform 0.1s ease;
-  cursor: pointer;
-}
-
-.gridCell:hover {
-  transform: scale(1.3);
-  z-index: 10;
-}
-
-.futureCell {
-  background-color: rgba(255, 255, 255, 0.01) !important;
-  cursor: default;
-  pointer-events: none;
-}
-
-/* Activity strength levels colors (GitHub palette match) */
-.level0 { background-color: rgba(255, 255, 255, 0.05); }
-.level1 { background-color: #0e4429; } /* Deep Emerald */
-.level2 { background-color: #006d35; } 
-.level3 { background-color: #26a641; }
-.level4 { background-color: #39d353; } /* Bright green */
-
-/* Tooltip float container */
-.gridTooltip {
-  position: absolute;
-  background-color: #121214;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.9);
-  white-space: nowrap;
-  pointer-events: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  z-index: 30;
-}
-
-.gridTooltip::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 4px;
-  border-style: solid;
-  border-color: #121214 transparent transparent transparent;
-}
-
-/* Grid Legend details */
-.gridLegend {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 5px;
-  font-size: 11.5px;
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.legendSquare {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-}
-
-
-/* 3. GENERATION PROMPT SECTION */
 .promptBoxSection {
-  background: radial-gradient(circle at top left, rgba(99, 102, 241, 0.08), transparent 60%), rgba(255, 255, 255, 0.02);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(99, 102, 241, 0.08),
+      transparent 60%
+    ),
+    rgba(255, 255, 255, 0.02);
+
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 2rem;
+
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -279,23 +169,31 @@
   align-items: flex-start;
 }
 
-.sparkTitleIcon {
-  color: #a855f7;
-  margin-top: 3px;
-  fill: rgba(168, 85, 247, 0.2);
-}
+/*
+   Make the Create Project heading visually match
+   "My Projects"
+*/
 
 .promptTitle {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 0.25rem;
+  letter-spacing: -0.2px;
+  margin-bottom: 0.35rem;
+  line-height: 1.3;
 }
 
 .promptSubtitle {
   font-size: 13.5px;
   color: rgba(255, 255, 255, 0.45);
   line-height: 1.5;
+  max-width: 650px;
+}
+
+.sparkTitleIcon {
+  color: #a855f7;
+  margin-top: 3px;
+  fill: rgba(168, 85, 247, 0.2);
 }
 
 .promptForm {
@@ -309,13 +207,21 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   padding: 1rem;
+
   color: #ffffff;
   font-size: 14.5px;
+
   min-height: 110px;
   resize: vertical;
+
   outline: none;
   font-family: inherit;
+
   transition: all 0.15s ease;
+}
+
+.promptTextarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .promptTextarea:focus {
@@ -344,18 +250,26 @@
 .submitBtn {
   background: linear-gradient(135deg, #6366f1, #a855f7);
   color: #ffffff;
+
   border: none;
   border-radius: 8px;
+
   font-weight: 600;
   font-size: 14px;
+
   padding: 0.75rem 1.5rem;
+
   cursor: pointer;
+
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+
   transition: all 0.2s ease;
+
   box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+
   white-space: nowrap;
 }
 
@@ -375,8 +289,10 @@
   box-shadow: none;
 }
 
+/* ============================================================
+   4. USER PROJECTS LIST
+============================================================ */
 
-/* 4. USER PROJECTS LIST SECTION */
 .projectsListSection {
   display: flex;
   flex-direction: column;
@@ -385,12 +301,16 @@
 
 .projectsLoadingState {
   padding: 4rem 2rem;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   gap: 1rem;
+
   text-align: center;
+
   color: rgba(255, 255, 255, 0.5);
   font-size: 14.5px;
 }
@@ -402,7 +322,9 @@
 .spinnerLarge {
   width: 40px;
   height: 40px;
+
   color: #a855f7;
+
   animation: rotate 1s linear infinite;
 }
 
@@ -412,26 +334,39 @@
   }
 }
 
-/* Empty State Styling */
+/* ============================================================
+   5. EMPTY STATE
+============================================================ */
+
 .emptyStateBox {
   background-color: rgba(255, 255, 255, 0.01);
+
   border: 1px dashed rgba(255, 255, 255, 0.1);
   border-radius: 16px;
+
   padding: 5rem 2rem;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   text-align: center;
+
   gap: 1.25rem;
 }
 
 .emptyIconWrapper {
   background-color: rgba(255, 255, 255, 0.03);
+
   border: 1px solid rgba(255, 255, 255, 0.05);
+
   color: rgba(255, 255, 255, 0.3);
+
   padding: 1.25rem;
+
   border-radius: 50%;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -446,20 +381,30 @@
 .emptySub {
   font-size: 14px;
   color: rgba(255, 255, 255, 0.45);
+
   max-width: 440px;
+
   line-height: 1.5;
 }
 
 .emptyBtn {
   background-color: rgba(255, 255, 255, 0.05);
+
   border: 1px solid rgba(255, 255, 255, 0.1);
+
   color: #ffffff;
+
   padding: 0.75rem 1.5rem;
+
   font-weight: 600;
   font-size: 13.5px;
+
   border-radius: 8px;
+
   cursor: pointer;
+
   transition: all 0.2s ease;
+
   margin-top: 0.5rem;
 }
 
@@ -468,17 +413,26 @@
   border-color: rgba(255, 255, 255, 0.18);
 }
 
-/* Connection/Error details box */
+/* ============================================================
+   6. ERROR STATE
+============================================================ */
+
 .errorStateBox {
   border: 1px solid rgba(248, 113, 113, 0.2);
+
   background-color: rgba(248, 113, 113, 0.03);
+
   border-radius: 12px;
+
   padding: 3rem;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   gap: 1rem;
+
   text-align: center;
 }
 
@@ -494,12 +448,18 @@
 
 .retryBtn {
   background-color: rgba(248, 113, 113, 0.12);
+
   border: 1px solid rgba(248, 113, 113, 0.25);
+
   color: #f87171;
+
   padding: 6px 14px;
+
   border-radius: 6px;
+
   font-weight: 600;
   font-size: 13px;
+
   cursor: pointer;
 }
 
@@ -507,7 +467,10 @@
   background-color: rgba(248, 113, 113, 0.2);
 }
 
-/* Projects Grid Cards UI */
+/* ============================================================
+   7. PROJECT GRID
+============================================================ */
+
 .projectsGrid {
   display: grid;
   grid-template-columns: 1fr;
@@ -516,31 +479,42 @@
 
 .projectCard {
   background-color: rgba(255, 255, 255, 0.02);
+
   border: 1px solid rgba(255, 255, 255, 0.06);
+
   border-radius: 12px;
+
   display: flex;
   flex-direction: column;
+
   transition: all 0.2s ease;
 }
 
 .projectCard:hover {
   transform: translateY(-2px);
+
   border-color: rgba(255, 255, 255, 0.12);
+
   background-color: rgba(255, 255, 255, 0.035);
 }
 
 .projectCardBody {
   padding: 1.5rem;
+
   display: flex;
   flex-direction: column;
+
   gap: 1rem;
 }
 
 .projectCardHeader {
   display: flex;
+
   justify-content: space-between;
   align-items: flex-start;
+
   gap: 1rem;
+
   flex-wrap: wrap;
 }
 
@@ -559,47 +533,59 @@
 .badge {
   display: flex;
   align-items: center;
+
   gap: 4px;
+
   font-size: 11px;
   font-weight: 600;
+
   padding: 3px 8px;
+
   border-radius: 4px;
 }
 
 .publishedBadge {
   background-color: rgba(168, 85, 247, 0.12);
-  border: 1px solid rgba(168, 85, 247, 0.25);
-  color: #c084fc;
-}
 
-.hostedBadge {
-  background-color: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  color: #34d399;
+  border: 1px solid rgba(168, 85, 247, 0.25);
+
+  color: #c084fc;
 }
 
 .projectPrompt {
   font-size: 13.5px;
+
   color: rgba(255, 255, 255, 0.5);
+
   line-height: 1.5;
+
   font-style: italic;
+
   display: -webkit-box;
+
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+
   overflow: hidden;
 }
 
 .projectMetadataRow {
   display: flex;
+
   gap: 1.5rem;
+
   font-size: 12.5px;
+
   color: rgba(255, 255, 255, 0.35);
+
   flex-wrap: wrap;
 }
 
 .metaItem {
   display: flex;
+
   align-items: center;
+
   gap: 6px;
 }
 
@@ -607,30 +593,45 @@
   color: rgba(255, 255, 255, 0.3);
 }
 
-/* Card actions toolbar */
+/* ============================================================
+   8. PROJECT ACTIONS
+============================================================ */
+
 .projectCardActions {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+
   padding: 1rem 1.5rem;
+
   display: flex;
+
   justify-content: space-between;
   align-items: center;
+
   gap: 1rem;
 }
 
 .editActionBtn {
   background-color: rgba(255, 255, 255, 0.04);
+
   border: 1px solid rgba(255, 255, 255, 0.08);
+
   color: #ffffff;
+
   text-decoration: none;
+
   font-size: 13px;
   font-weight: 600;
+
   padding: 6px 14px;
+
   border-radius: 6px;
+
   transition: all 0.15s ease;
 }
 
 .editActionBtn:hover {
   background-color: rgba(255, 255, 255, 0.08);
+
   border-color: rgba(255, 255, 255, 0.15);
 }
 
@@ -641,69 +642,77 @@
 
 .iconActionBtn {
   background-color: transparent;
+
   border: 1px solid rgba(255, 255, 255, 0.05);
+
   color: rgba(255, 255, 255, 0.4);
+
   width: 32px;
   height: 32px;
+
   border-radius: 6px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   cursor: pointer;
+
   transition: all 0.15s ease;
 }
 
 .iconActionBtn:hover {
   color: #ffffff;
+
   background-color: rgba(255, 255, 255, 0.05);
+
   border-color: rgba(255, 255, 255, 0.15);
 }
 
 .activeAction {
   color: #a855f7 !important;
+
   background-color: rgba(168, 85, 247, 0.08) !important;
+
   border-color: rgba(168, 85, 247, 0.25) !important;
 }
 
 .deleteBtnColor:hover {
   color: #ef4444 !important;
+
   background-color: rgba(239, 68, 68, 0.08) !important;
+
   border-color: rgba(239, 68, 68, 0.2) !important;
 }
 
-/* Center Loader for Contributions card */
-.centerLoader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1rem;
-  gap: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 13.5px;
-}
+/* ============================================================
+   9. RESPONSIVE DESIGN
+============================================================ */
 
-
-/* RESPONSIVE DESIGN MEDIA QUERIES */
 @media (min-width: 768px) {
   .dashboardHeader {
     flex-direction: row;
+
     align-items: flex-start;
+
     gap: 2rem;
   }
-  
+
   .headerStats {
     justify-content: flex-end;
+
     flex-wrap: nowrap;
   }
 
   .statBox {
     flex: initial;
+
     width: 200px;
   }
 
   .projectsGrid {
     grid-template-columns: repeat(2, 1fr);
+
     gap: 1.5rem;
   }
 }
@@ -712,4 +721,5 @@
   .projectsGrid {
     grid-template-columns: repeat(3, 1fr);
   }
+
 }
