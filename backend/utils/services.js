@@ -1094,7 +1094,10 @@ function stripInjectedRuntime(html) {
     );
 }
 
-// Extract the existing brand identity from the previous HTML.
+// ═══════════════════════════════════════════════════════════════════════════
+// EXTRACT EXISTING BRAND IDENTITY
+// ═══════════════════════════════════════════════════════════════════════════
+
 function extractBrandIdentity(html) {
   if (!html) return null;
 
@@ -1109,11 +1112,17 @@ function extractBrandIdentity(html) {
       .trim();
   };
 
-  const title = grab(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  const title = grab(
+    /<title[^>]*>([\s\S]*?)<\/title>/i
+  );
 
-  const h1 = grab(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i);
+  const h1 = grab(
+    /<h1\b[^>]*>([\s\S]*?)<\/h1>/i
+  );
 
-  const h2 = grab(/<h2\b[^>]*>([\s\S]*?)<\/h2>/i);
+  const h2 = grab(
+    /<h2\b[^>]*>([\s\S]*?)<\/h2>/i
+  );
 
   const headerMatch = html.match(
     /<header[\s\S]*?<\/header>/i
@@ -1146,7 +1155,10 @@ function extractBrandIdentity(html) {
   };
 }
 
-// Shrink previous HTML to fit the token budget.
+// ═══════════════════════════════════════════════════════════════════════════
+// SHRINK PREVIOUS HTML TO FIT TOKEN BUDGET
+// ═══════════════════════════════════════════════════════════════════════════
+
 function truncatePreviousHtml(html, budgetTokens) {
   if (!html) return html;
 
@@ -1164,7 +1176,9 @@ function truncatePreviousHtml(html, budgetTokens) {
       ? html.slice(0, headEnd + 7)
       : "";
 
-  const bodyStart = html.search(/<body[^>]*>/i);
+  const bodyStart = html.search(
+    /<body[^>]*>/i
+  );
 
   const bodyOpen =
     bodyStart > 0
@@ -1214,69 +1228,205 @@ const GENERATE_SYSTEM = buildGenerateSystem({
   summaryClose: SUMMARY_CLOSE,
 });
 
-// ---------------------------------------------------------------------------
+// ═══════════════════════════════════════════════════════════════════════════
 // IMPORTANT CONTENT RULES
-// ---------------------------------------------------------------------------
-// We intentionally keep llm.js unchanged.
-// These instructions are added here so the user's prompt is treated as an
-// instruction rather than copied directly into visible website content.
-// ---------------------------------------------------------------------------
+// ═══════════════════════════════════════════════════════════════════════════
+
+/*
+  IMPORTANT:
+
+  The user's prompt is an instruction.
+
+  It is NOT website copy.
+
+  The AI must understand the request and create original website content.
+*/
 
 const CONTENT_GENERATION_RULES = `
-IMPORTANT WEBSITE CONTENT RULES:
+════════════════════════════════════════════════════════════════════
+CRITICAL WEBSITE CONTENT INSTRUCTIONS
+════════════════════════════════════════════════════════════════════
 
-1. Treat the user's prompt as an instruction describing the website they want.
-   It is NOT website copy.
+The user's message is an INSTRUCTION describing the website they want.
 
-2. NEVER copy the user's request verbatim into the website's hero headline.
+The user's message is NOT website copy.
 
-3. NEVER use instruction-style text such as:
-   - "Make a modern ice cream website"
-   - "Create a portfolio website"
-   - "Build a restaurant website"
-   - "Make a website for..."
-   as the main H1 or hero headline.
+You must understand the meaning of the user's request and then create
+professional, original website content from that meaning.
 
-4. Extract the meaning of the request:
-   - business or website type
-   - target audience
-   - visual style
-   - features
-   - tone
-   - products or services
-   - important requirements
+────────────────────────────────────────────────────────────────────
+HERO HEADLINE RULES
+────────────────────────────────────────────────────────────────────
 
-5. Create ORIGINAL website copy based on that meaning.
+The hero H1 is extremely important.
 
-6. The hero H1 should sound like real marketing copy and should usually be
-   concise, natural, memorable, and around 3-8 words.
+NEVER use the user's request itself as the hero H1.
 
-7. The hero subtitle should explain the business, product, service, or value
-   proposition naturally.
+NEVER copy instruction-style phrases into the H1.
 
-8. Section headings, CTA text, descriptions, and other visible copy should
-   also be original website content rather than instructions copied from the
-   user's prompt.
+For example:
 
-9. For example, if the user asks:
-   "Make a modern ice cream website"
+User request:
+"make a natural scenery website"
 
-   Do NOT use:
-   "Make a modern ice cream website"
+BAD:
+"Make a Natural Scenery Website"
 
-   as the H1.
+BAD:
+"Natural Scenery Website"
 
-   Instead use an original headline such as:
-   "Sweet Moments, One Scoop at a Time"
+BAD:
+"Create a Natural Scenery Website"
 
-10. If the user provides a specific business/brand name, preserve that
-    specific name. Only the generic instruction wording should be transformed
-    into natural website copy.
+GOOD:
+"Escape Into Nature"
 
-11. Do not mention these content rules in the generated website.
+GOOD:
+"Where Nature Comes Alive"
+
+GOOD:
+"Discover the Beauty of Nature"
+
+Another example:
+
+User request:
+"make an ice cream website"
+
+BAD:
+"Make an Ice Cream Website"
+
+GOOD:
+"Sweet Moments, One Scoop at a Time"
+
+Another example:
+
+User request:
+"make a movie website"
+
+BAD:
+"Make a Movie Website"
+
+GOOD:
+"Stories Worth Watching"
+
+The hero H1 should normally:
+
+- be around 3-8 words
+- sound like real marketing copy
+- be natural and memorable
+- communicate the website's purpose or value
+- NOT sound like an instruction
+- NOT repeat the user's prompt
+- NOT contain phrases like "make a website"
+- NOT contain phrases like "create a website"
+- NOT contain phrases like "build a website"
+- NOT contain phrases like "design a website"
+
+────────────────────────────────────────────────────────────────────
+UNDERSTAND THE REQUEST
+────────────────────────────────────────────────────────────────────
+
+Extract these things from the user's request:
+
+- website type
+- business/industry
+- target audience
+- products or services
+- visual style
+- tone
+- important features
+- colors
+- layout requirements
+- any specific brand name
+
+Then create ORIGINAL website copy based on those requirements.
+
+────────────────────────────────────────────────────────────────────
+VISIBLE WEBSITE COPY
+────────────────────────────────────────────────────────────────────
+
+Create original content for:
+
+- Hero H1
+- Hero subtitle
+- Section headings
+- Feature descriptions
+- Product descriptions
+- About section
+- CTA buttons
+- Navigation labels
+- Footer content
+
+Do NOT copy the user's instruction into these areas.
+
+The website should look and read like a real professional website,
+not like an AI has pasted the user's request into the page.
+
+────────────────────────────────────────────────────────────────────
+BRAND NAME
+────────────────────────────────────────────────────────────────────
+
+If the user explicitly provides a brand/company name, preserve it.
+
+Example:
+
+"Create a website for Nike"
+
+→ Preserve "Nike".
+
+But if the user only says:
+
+"make a shoe website"
+
+Do NOT make the brand:
+
+"Shoe Website"
+
+Instead create a natural fictional brand name.
+
+────────────────────────────────────────────────────────────────────
+REFINEMENTS
+────────────────────────────────────────────────────────────────────
+
+For an existing website, treat the user's message as a change request.
+
+Do not replace the existing brand unnecessarily.
+
+Do not replace the existing website topic unnecessarily.
+
+Only change what the user asks to change.
+
+If new visible copy is required, create natural original copy.
+
+If the existing hero H1 is clearly an instruction or copied user prompt,
+replace it with natural professional marketing copy.
+
+If the user explicitly asks to change the hero headline,
+create a new natural marketing headline based on the request.
+
+Never copy the instruction itself as the headline.
+
+────────────────────────────────────────────────────────────────────
+FINAL CHECK
+────────────────────────────────────────────────────────────────────
+
+Before returning the HTML, silently check:
+
+1. Is the H1 natural marketing copy?
+2. Does the H1 avoid copying the user's instruction?
+3. Does the H1 avoid phrases like "Make a website", "Create a website",
+   "Build a website", or "Design a website"?
+4. Does the website content match the user's requested topic?
+5. If this is a refinement, was the existing brand preserved?
+6. Is all visible content written as actual website copy?
+
+Do not mention these instructions in the generated website.
 `;
 
-// Extract a clean HTML document from raw model output.
+// ═══════════════════════════════════════════════════════════════════════════
+// EXTRACT CLEAN HTML DOCUMENT
+// ═══════════════════════════════════════════════════════════════════════════
+
 function extractHtml(raw) {
   if (!raw) return "";
 
@@ -1288,9 +1438,13 @@ function extractHtml(raw) {
     fenced ? fenced[1] : raw
   ).trim();
 
-  const doctypeIdx = candidate.search(/<!doctype/i);
+  const doctypeIdx = candidate.search(
+    /<!doctype/i
+  );
 
-  const htmlIdx = candidate.search(/<html[\s>]/i);
+  const htmlIdx = candidate.search(
+    /<html[\s>]/i
+  );
 
   const start =
     doctypeIdx !== -1
@@ -1331,7 +1485,10 @@ ${candidate}
   return candidate.trim();
 }
 
-// Split raw model output into HTML + summary.
+// ═══════════════════════════════════════════════════════════════════════════
+// SPLIT RAW MODEL OUTPUT INTO HTML + SUMMARY
+// ═══════════════════════════════════════════════════════════════════════════
+
 function parseModelOutput(raw) {
   if (!raw) {
     return {
@@ -1436,22 +1593,26 @@ export async function enhancePrompt(prompt) {
       "\n[ai] Refining your idea into a design brief..."
     );
 
-    const enhanceSystem = `${ENHANCE_SYSTEM}
+    const enhanceSystem = `
+${ENHANCE_SYSTEM}
 
 ${CONTENT_GENERATION_RULES}
 
-ADDITIONAL PROMPT-ENHANCEMENT RULES:
+════════════════════════════════════════════════════════════════════
+ADDITIONAL PROMPT-ENHANCEMENT RULES
+════════════════════════════════════════════════════════════════════
 
 The user's prompt is a request for a website, not finished website copy.
 
-Extract the actual requirements from the user's request and turn them into
-a useful creative/design brief.
+Extract the actual requirements from the user's request and turn them
+into a useful creative/design brief.
 
 Do not turn the original request into a hero headline.
 
 Do not recommend using the user's exact instruction as visible website text.
 
 The generated brief should help the website generator create original:
+
 - hero headline
 - hero subtitle
 - section headings
@@ -1460,7 +1621,30 @@ The generated brief should help the website generator create original:
 - marketing copy
 
 The website copy should be natural and appropriate for the business or
-website described by the user.`;
+website described by the user.
+
+IMPORTANT:
+
+If the user says:
+
+"make a natural scenery website"
+
+the enhanced brief should describe the desired natural scenery website,
+but it MUST NOT say that the hero H1 should be:
+
+"make a natural scenery website"
+
+Instead it should recommend natural marketing copy such as:
+
+"Escape Into Nature"
+
+or
+
+"Discover the Beauty of Nature".
+
+The enhanced prompt is an internal design brief.
+It should help the final website generator understand the user's intent.
+`;
 
     const out = await callLLM(
       [
@@ -1514,10 +1698,14 @@ export async function generateSite(
   const mockSeed =
     originalPrompt || prompt;
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // OFFLINE / MOCK FALLBACK
+  // ═══════════════════════════════════════════════════════════════════════
+
   if (!isLLMConfigured()) {
     return {
       html: postProcess(
-        generateMockSite(mockSeed)
+        generateMockSite(mockSeed).html
       ),
       summary: "",
       source: "mock-no-key",
@@ -1559,18 +1747,48 @@ export async function generateSite(
     const messages = [
       {
         role: "system",
-        content: `${GENERATE_SYSTEM}
+        content: `
+${GENERATE_SYSTEM}
 
-${CONTENT_GENERATION_RULES}`,
+${CONTENT_GENERATION_RULES}
+
+════════════════════════════════════════════════════════════════════
+ABSOLUTE PRIORITY
+════════════════════════════════════════════════════════════════════
+
+The user's prompt is an instruction.
+
+It is NOT website copy.
+
+Never use the user's instruction verbatim as the website's H1.
+
+If the user's prompt contains:
+
+"make a natural scenery website"
+
+the H1 must NOT be:
+
+"Make a Natural Scenery Website"
+
+It must be original marketing copy such as:
+
+"Escape Into Nature"
+
+"Where Nature Comes Alive"
+
+"Discover the Beauty of Nature"
+
+The same rule applies to every other website request.
+
+Before returning HTML, inspect the H1 and rewrite it if it resembles
+the user's instruction.
+`,
       },
     ];
 
-    for (const m of historySlice) {
-      messages.push({
-        role: m.role,
-        content: m.text,
-      });
-    }
+    // ═════════════════════════════════════════════════════════════════════
+    // EXISTING WEBSITE / REFINEMENT
+    // ═════════════════════════════════════════════════════════════════════
 
     if (trimmedHtml) {
       const brand =
@@ -1580,43 +1798,65 @@ ${CONTENT_GENERATION_RULES}`,
 
       const brandLock = brand
         ? `
+════════════════════════════════════════════════════════════════════
+BRAND LOCK — DO NOT VIOLATE
+════════════════════════════════════════════════════════════════════
 
-═══ BRAND LOCK — DO NOT VIOLATE ═══
+The existing brand identity is FIXED.
 
-The existing brand on this project is FIXED.
-
-You MUST preserve it exactly:
+Preserve:
 
 • Title: "${brand.title || "(none)"}"
-
-• H1: "${brand.h1 || "(none)"}"
-
 • Brand link: "${brand.brandLink || "(none)"}"
-
-• Hero subtitle: "${brand.h2 || "(none)"}"
 
 Do NOT change the brand name.
 
-Do NOT change the topic or industry.
+Do NOT change the website topic or industry.
 
-Do NOT invent a new company.
+Do NOT invent a different company.
 
-The user's request is a TWEAK to the EXISTING site,
-not a new site.
+The user's request is a TWEAK to the EXISTING website.
 
-If the change request seems to imply a different brand,
-keep the original brand.
+IMPORTANT:
 
-For refinement requests, preserve the existing hero headline,
-brand identity, and other existing content unless the user
-explicitly asks to change them.
+The existing H1 is NOT automatically protected.
 
+If the existing H1 is clearly an instruction, prompt, or copied request,
+you MUST replace it with natural professional marketing copy.
+
+For example:
+
+"Make a Natural Scenery Website"
+→ "Escape Into Nature"
+
+"Create an Ice Cream Website"
+→ "Sweet Moments, One Scoop at a Time"
+
+"Build a Movie Website"
+→ "Stories Worth Watching"
+
+For normal refinements:
+
+- preserve a good existing H1
+- preserve the existing brand
+- preserve the existing topic
+- change only what the user requested
+
+If the user explicitly asks to change the headline,
+create a new natural marketing headline.
+
+Do NOT copy the user's instruction as the new H1.
 `
         : "";
 
       messages.push({
         role: "user",
-        content: `Current site HTML (source of truth — keep what works, change only what's requested):
+        content: `
+Current site HTML is the source of truth.
+
+Keep what already works.
+
+Change ONLY what the user requested.
 
 \`\`\`html
 ${trimmedHtml}
@@ -1624,49 +1864,205 @@ ${trimmedHtml}
 
 ${brandLock}
 
-Change request:
+════════════════════════════════════════════════════════════════════
+CHANGE REQUEST
+════════════════════════════════════════════════════════════════════
 
 ${prompt}
 
-Remember:
-- The change request is an instruction.
-- Do not copy the request verbatim into visible website content.
-- If new copy is required, write natural, original website copy.
-- Do not replace the existing brand or hero headline unless the user explicitly asks for it.
+════════════════════════════════════════════════════════════════════
+REFINEMENT RULES
+════════════════════════════════════════════════════════════════════
 
-Return the FULL updated HTML document followed by the ${SUMMARY_OPEN}...${SUMMARY_CLOSE} block.`,
+The change request is an instruction.
+
+Do NOT copy the change request verbatim into visible website content.
+
+If new copy is required, write natural, original website copy.
+
+Do not replace the existing brand.
+
+Do not replace the existing website topic.
+
+Do not unnecessarily replace a good existing hero headline.
+
+If the current hero headline is clearly a copied instruction,
+correct it to natural marketing copy.
+
+Return the FULL updated HTML document followed by:
+
+${SUMMARY_OPEN}
+
+your summary
+
+${SUMMARY_CLOSE}
+`,
       });
-    } else {
+    }
+
+    // ═════════════════════════════════════════════════════════════════════
+    // FIRST WEBSITE GENERATION
+    // ═════════════════════════════════════════════════════════════════════
+
+    else {
       messages.push({
         role: "user",
-        content: `Build a complete, production-quality website based on this creative brief:
+        content: `
+Create a complete, production-quality website based on the following
+user request:
 
-${prompt}
+"${prompt}"
 
-IMPORTANT:
+════════════════════════════════════════════════════════════════════
+VERY IMPORTANT
+════════════════════════════════════════════════════════════════════
 
-The text above describes the website the user wants. It is NOT website copy.
+The text above is a USER INSTRUCTION.
 
-Do not use the user's request verbatim as the website's hero headline.
+It is NOT website copy.
 
-Instead, understand the business, product, service, audience, style, and requirements described in the brief and create original website copy.
+Understand what the user wants and create the website accordingly.
 
-The hero headline must:
-- be natural marketing copy
-- be concise
-- normally be around 3-8 words
-- communicate the value or identity of the website
+Do NOT copy the user's instruction into the website.
+
+════════════════════════════════════════════════════════════════════
+HERO H1 REQUIREMENT
+════════════════════════════════════════════════════════════════════
+
+The hero H1 MUST be original marketing copy.
+
+It must NOT be the user's request.
+
+It must NOT contain instruction-style wording such as:
+
+- Make a website
+- Create a website
+- Build a website
+- Design a website
+- Generate a website
+- Make a [topic] website
+- Create a [topic] website
+- Build a [topic] website
+
+Example:
+
+User:
+"make a natural scenery website"
+
+DO NOT generate:
+
+<h1>Make a Natural Scenery Website</h1>
+
+DO NOT generate:
+
+<h1>Natural Scenery Website</h1>
+
+Instead generate something like:
+
+<h1>Escape Into Nature</h1>
+
+or:
+
+<h1>Where Nature Comes Alive</h1>
+
+or:
+
+<h1>Discover the Beauty of Nature</h1>
+
+Another example:
+
+User:
+"make a movie website"
+
+DO NOT generate:
+
+<h1>Make a Movie Website</h1>
+
+Instead generate:
+
+<h1>Stories Worth Watching</h1>
+
+Another example:
+
+User:
+"make an ice cream website"
+
+DO NOT generate:
+
+<h1>Make an Ice Cream Website</h1>
+
+Instead generate:
+
+<h1>Sweet Moments, One Scoop at a Time</h1>
+
+════════════════════════════════════════════════════════════════════
+CONTENT REQUIREMENTS
+════════════════════════════════════════════════════════════════════
+
+Create original and natural:
+
+- hero headline
+- hero subtitle
+- section headings
+- descriptions
+- CTA text
+- feature content
+- product/service content
+- about content
+- footer content
+
+The website should feel like a real professional website.
+
+The user's request should influence the website's CONTENT and DESIGN,
+but the request itself should not appear as website copy.
+
+════════════════════════════════════════════════════════════════════
+BRAND NAME
+════════════════════════════════════════════════════════════════════
+
+If the user explicitly provides a brand/company name, preserve it.
+
+Example:
+
+"Create a website for Nike"
+
+→ Keep "Nike".
+
+But if the user only says:
+
+"make a shoe website"
+
+Do NOT create a brand called:
+
+"Shoe Website"
+
+Instead create a natural fictional brand name.
+
+════════════════════════════════════════════════════════════════════
+FINAL VALIDATION
+════════════════════════════════════════════════════════════════════
+
+Before returning the HTML, inspect the hero H1.
+
+If the H1 resembles the user's request, rewrite it.
+
+The final H1 must:
+
+- sound like professional marketing copy
+- be natural
+- usually be 3-8 words
+- represent the website's purpose
 - NOT sound like an instruction
+- NOT copy the user's request
 
-For example, if the request describes an ice cream business, create a suitable headline such as:
-"Sweet Moments, One Scoop at a Time"
+Return the raw HTML document followed by:
 
-Do not use:
-"Make a modern ice cream website"
+${SUMMARY_OPEN}
 
-Also create an appropriate hero subtitle, section headings, descriptions, and CTA text.
+your summary
 
-Return the raw HTML document followed by the ${SUMMARY_OPEN}...${SUMMARY_CLOSE} block.`,
+${SUMMARY_CLOSE}
+`,
       });
     }
 
@@ -1718,12 +2114,14 @@ Return the raw HTML document followed by the ${SUMMARY_OPEN}...${SUMMARY_CLOSE} 
     };
   } catch (err) {
     console.log(
-      `[ai] Every AI model is busy right now, returned a starter template instead. ${friendlyError(err)}\n`
+      `[ai] Every AI model is busy right now, returned a starter template instead. ${friendlyError(
+        err
+      )}\n`
     );
 
     return {
       html: postProcess(
-        generateMockSite(mockSeed)
+        generateMockSite(mockSeed).html
       ),
       summary: "",
       source: "mock-error",
@@ -1915,7 +2313,6 @@ If you didn't request this, you can safely ignore this email.
           accept: "application/json",
           "content-type":
             "application/json",
-
           "api-key":
             process.env.BREVO_API_KEY,
         },
@@ -1979,7 +2376,10 @@ If you didn't request this, you can safely ignore this email.
   }
 }
 
-// Escape HTML characters.
+// ═══════════════════════════════════════════════════════════════════════════
+// ESCAPE HTML
+// ═══════════════════════════════════════════════════════════════════════════
+
 function escape(s) {
   return String(s).replace(
     /[<>&"']/g,
@@ -1994,7 +2394,10 @@ function escape(s) {
   );
 }
 
-// OTP email HTML.
+// ═══════════════════════════════════════════════════════════════════════════
+// OTP EMAIL HTML
+// ═══════════════════════════════════════════════════════════════════════════
+
 function renderEmailHtml({
   name,
   code,
@@ -2055,7 +2458,6 @@ export function saveOtp(
 ) {
   otpStore.set(email, {
     code,
-
     expiresAt:
       Date.now() + OTP_TTL_MS,
   });
