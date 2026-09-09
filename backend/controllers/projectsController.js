@@ -263,131 +263,187 @@ function visibleText(html) {
 
 export async function generate(req, res, next) {
   try {
-    console.log("1️⃣ Generate started");
+    console.log("🚀 Generate started");
 
     const project = await loadOwnProject(req.params.id, req, res);
     if (!project) return;
-
-    console.log("2️⃣ Project loaded");
-
-    // First generation cost is 5, edit/refinement cost is 2
-    const isFirstTime = !project.html || project.html.length < 100;
-    const cost = isFirstTime ? 5 : 2;
-
-    console.log("3️⃣ First time:", isFirstTime);
-    console.log("4️⃣ Cost:", cost);
-
-    // Check if user has sufficient credits
-    if (req.user.credits < cost) {
-      return res.status(400).json({
-        error: `You need at least ${cost} credits to generate the site`
-      });
-    }
-
-    console.log("5️⃣ Credits check passed");
 
     const prompt = (req.body.prompt || "").trim();
 
     if (!prompt) {
       return res.status(400).json({
-        error: "Prompt is required"
+        error: "Prompt is required",
       });
     }
 
     if (prompt.length > 2000) {
       return res.status(400).json({
-        error: "Prompt is too long, maximum 2000 characters"
+        error: "Prompt is too long, maximum 2000 characters",
       });
     }
 
-    console.log("6️⃣ Prompt received:", prompt);
+    // First generation = 5 credits
+    // Refinement = 2 credits
+    const isFirstTime = !project.html || project.html.length < 100;
+    const cost = isFirstTime ? 5 : 2;
 
-    // Add user prompt to project messages
+    // Check credits BEFORE starting expensive AI request
+    if (req.user.credits < cost) {
+      return res.status(400).json({
+        error: `You need at least ${cost} credits to generate the site`,
+      });
+    }
+
+    console.log("📌 Project:", project._id.toString());
+    console.log("📌 First generation:", isFirstTime);
+    console.log("📌 Cost:", cost);
+    console.log("📌 Prompt:", prompt);
+
+    /*
+     * IMPORTANT:
+     * Save a version of the project before starting the AI request.
+     *
+     * This prevents two generate requests from using the same
+     * Mongoose document version.
+     */
+
     project.messages.push({
       role: "user",
-      text: prompt
+      text: prompt,
     });
 
-    console.log("7️⃣ User message added");
-
-    // Enhance prompt using LLM only during first generation
     let enhancedPrompt = project.enhancedPrompt;
 
+    // Enhance prompt only on first generation
     if (isFirstTime) {
-      console.log("8️⃣ Calling enhancePrompt...");
+      console.log("🤖 Enhancing prompt...");
 
       const enhancedResult = await enhancePrompt(prompt);
 
-      console.log("9️⃣ enhancePrompt completed");
-      console.log("Enhanced result:", enhancedResult);
-
-      // enhancePrompt() returns:
-      // {
-      //   text: "...",
-      //   source: "llm"
-      // }
-
-      // Project schema expects enhancedPrompt to be a String
-      enhancedPrompt = enhancedResult.text;
+      enhancedPrompt = enhancedResult?.text || prompt;
 
       project.enhancedPrompt = enhancedPrompt;
 
-      console.log("🔟 enhancedPrompt saved as string");
+      console.log("✅ Enhanced prompt created");
     }
 
-    // Formulate previous conversation history for LLM context
     const history = project.messages.map((m) => ({
       role: m.role,
-      text: m.text
+      text: m.text,
     }));
 
-    console.log("1️⃣1️⃣ History created");
+    console.log("🤖 Generating website...");
 
-    // Generate / refine website
-    console.log("1️⃣2️⃣ Calling generateSite...");
+    const outcome = await generateSite(
+  prompt,
+  {
+    previousHtml: project.html,
+    history,
+    originalPrompt: enhancedPrompt,
+  }
+);
 
-    const outcome = await generateSite({
-      previousHtml: project.html,
-      history,
-      prompt,
-      enhancedPrompt
+    if (!outcome?.html || outcome.html.length < 100) {
+      return res.status(500).json({
+        error: "AI failed to generate valid website HTML",
+      });
+    }
+
+    console.log(
+      "✅ Website generated:",
+      outcome.html.length,
+      "characters"
+    );
+
+    /*
+     * Re-fetch the project AFTER AI generation.
+     *
+     * This is important because the original Mongoose document
+     * may now be stale if another request modified the project.
+     */
+    const latestProject = await Project.findOne({
+      _id: project._id,
+      user: req.user._id,
     });
 
-    console.log("1️⃣3️⃣ generateSite completed");
-    console.log("Generated HTML length:", outcome?.html?.length);
+    if (!latestProject) {
+      return res.status(404).json({
+        error: "Project no longer exists",
+      });
+    }
 
-    project.html = outcome.html;
+    /*
+     * If the project already changed while AI was running,
+     * don't overwrite the newer version.
+     */
+    if (
+      latestProject.updatedAt &&
+      project.updatedAt &&
+      latestProject.updatedAt.getTime() !== project.updatedAt.getTime()
+    ) {
+      return res.status(409).json({
+        error:
+          "This project was updated by another request. Please refresh and try again.",
+      });
+    }
 
-    // Add AI response as assistant message
-    project.messages.push({
+    // Update latest project
+    latestProject.html = outcome.html;
+
+    latestProject.enhancedPrompt =
+      enhancedPrompt || latestProject.enhancedPrompt;
+
+    latestProject.messages.push({
       role: "assistant",
       text:
         outcome.message ||
-        "Here is your generated website code"
+        "Here is your generated website.",
     });
 
-    console.log("1️⃣4️⃣ Assistant message added");
+    // Deduct credits from latest user state
+    const updatedUser = await req.user.constructor.findOneAndUpdate(
+      {
+        _id: req.user._id,
+        credits: { $gte: cost },
+      },
+      {
+        $inc: { credits: -cost },
+      },
+      {
+        new: true,
+      }
+    );
 
-    // Deduct credits
-    req.user.credits -= cost;
+    if (!updatedUser) {
+      return res.status(400).json({
+        error: "Insufficient credits",
+      });
+    }
 
-    console.log("1️⃣5️⃣ Credits deducted");
+    try {
+      await latestProject.save();
+    } catch (saveError) {
+      /*
+       * Project save failed after credit deduction.
+       * Refund the credits so the user is not charged.
+       */
+      await req.user.constructor.findByIdAndUpdate(
+        req.user._id,
+        {
+          $inc: { credits: cost },
+        }
+      );
 
-    await req.user.save();
+      throw saveError;
+    }
 
-    console.log("1️⃣6️⃣ User saved");
-
-    await project.save();
-
-    console.log("1️⃣7️⃣ Project saved");
-
-    console.log("1️⃣8️⃣ Sending response to frontend");
+    console.log("✅ Project saved");
+    console.log("💳 Credits deducted:", cost);
 
     return res.json({
-      project: project.toClient(),
-      user: req.user.toClient()
+      project: latestProject.toClient(),
+      user: updatedUser.toClient(),
     });
-
   } catch (err) {
     console.error("❌ GENERATE ERROR:", err);
     next(err);
