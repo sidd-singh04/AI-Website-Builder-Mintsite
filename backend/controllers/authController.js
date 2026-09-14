@@ -163,7 +163,7 @@ export async function resendRegister(req, res, next) {
     }
 
     return issueAndSend(
-      email,
+      email,   // isko bhi user.email kr skte the
       user.name,
       "signup",
       res,
@@ -233,62 +233,9 @@ export async function me(req, res, next) {
   }
 }
 
-// 6. Contribution History
-export async function contributions(req, res, next) {
-  try {
-    const oneYearAgo = new Date();
 
-    oneYearAgo.setUTCHours(0, 0, 0, 0);
-    oneYearAgo.setUTCDate(
-      oneYearAgo.getUTCDate() - 364
-    );
 
-    const projects = await Project.find({
-      user: req.user._id,
-      updatedAt: {
-        $gte: oneYearAgo
-      }
-    }).select("messages createdAt updatedAt");
-
-    const counts = {};
-
-    projects.forEach((project) => {
-
-      const createdDate = new Date(
-        project.createdAt
-      )
-        .toISOString()
-        .split("T")[0];
-
-      counts[createdDate] =
-        (counts[createdDate] || 0) + 1;
-
-      project.messages.forEach((msg) => {
-
-        if (msg.role === "user") {
-
-          const msgDate = new Date(
-            msg.createdAt
-          )
-            .toISOString()
-            .split("T")[0];
-
-          counts[msgDate] =
-            (counts[msgDate] || 0) + 2;
-        }
-      });
-    });
-
-    return res.json({
-      counts
-    });
-
-  } catch (err) {
-    next(err);
-  }
-}
-
-// 7. Update User Profile
+// 6. Update User Profile
 export async function updateProfile(req, res, next) {
   try {
     const name =
@@ -321,7 +268,7 @@ export async function updateProfile(req, res, next) {
   }
 }
 
-// 8. Change Password
+// 7. Change Password
 export async function changePassword(req, res, next) {
   try {
     const {
@@ -364,7 +311,7 @@ export async function changePassword(req, res, next) {
   }
 }
 
-// 9. Delete User Account
+// 8. Delete User Account
 export async function deleteAccount(req, res, next) {
   try {
 
@@ -381,5 +328,4 @@ export async function deleteAccount(req, res, next) {
   } catch (err) {
     next(err);
   }
-
 }

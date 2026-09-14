@@ -78,12 +78,14 @@ const projectSchema = new mongoose.Schema(
 
     viewedBy: {
       type: [mongoose.Schema.Types.ObjectId],
+      ref : "User",
       default: [],
       select: false,
     },
 
     likedBy: {
       type: [mongoose.Schema.Types.ObjectId],
+      ref : "User",
       default: [],
       select: false,
     },

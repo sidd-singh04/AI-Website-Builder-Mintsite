@@ -7,7 +7,7 @@ import { Project } from "../models/Project.js";
 
 export async function list(req, res, next) {
   try {
-    const sort = req.query.sort || "new";
+    const sort = req.query.sort || "new";    // Sorts Data
 
     const sortMap = {
       new: {

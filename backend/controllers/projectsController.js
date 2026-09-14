@@ -13,18 +13,20 @@ export async function loadOwnProject(id, req, res) {
     res.status(400).json({ error: "Invalid project ID over here" });
     return null;
   }
-  
+
   const project = await Project.findById(id);
   if (!project) {
     res.status(404).json({ error: "Project not found over here" });
     return null;
   }
-  
+
   if (project.user.toString() !== req.user._id.toString()) {
-    res.status(403).json({ error: "Forbidden: You do not own this project over here" });
+    res
+      .status(403)
+      .json({ error: "Forbidden: You do not own this project over here" });
     return null;
   }
-  
+
   return project;
 }
 
@@ -34,9 +36,9 @@ export async function list(req, res, next) {
     const list = await Project.find({ user: req.user._id })
       .sort({ updatedAt: -1 })
       .limit(100);
-    
+
     return res.json({
-      projects: list.map((p) => p.toClient())
+      projects: list.map((p) => p.toClient()),
     });
   } catch (err) {
     next(err);
@@ -48,25 +50,27 @@ export async function create(req, res, next) {
   try {
     const prompt = (req.body.prompt || "").trim();
     const name = (req.body.name || "").trim();
-    
+
     if (!prompt) {
       return res.status(400).json({
-        error: "Prompt is required over here"
+        error: "Prompt is required over here",
       });
     }
-    
+
     if (prompt.length > 2000) {
       return res.status(400).json({
-        error: "Prompt is too long, maximum 2000 characters over here"
+        error: "Prompt is too long, maximum 2000 characters over here",
       });
     }
-    
+
     // Generate dynamic fallback name from prompt split [5]
     let finalName = name;
     if (!finalName) {
-      finalName = prompt.split(" ").slice(0, 5).join(" ").slice(0, 60) || "Untitled Project";
+      finalName =
+        prompt.split(" ").slice(0, 5).join(" ").slice(0, 60) ||
+        "Untitled Project";
     }
-    
+
     const project = await Project.create({
       user: req.user._id,
       name: finalName,
@@ -74,13 +78,13 @@ export async function create(req, res, next) {
       messages: [
         {
           role: "user",
-          text: prompt
-        }
-      ]
+          text: prompt,
+        },
+      ],
     });
-    
+
     return res.status(201).json({
-      project: project.toClient()
+      project: project.toClient(),
     });
   } catch (err) {
     next(err);
@@ -92,9 +96,9 @@ export async function get(req, res, next) {
   try {
     const project = await loadOwnProject(req.params.id, req, res);
     if (!project) return;
-    
+
     return res.json({
-      project: project.toClient()
+      project: project.toClient(),
     });
   } catch (err) {
     next(err);
@@ -106,40 +110,41 @@ export async function update(req, res, next) {
   try {
     const project = await loadOwnProject(req.params.id, req, res);
     if (!project) return;
-    
+
     // Update Name [6, 7]
     if (req.body.name !== undefined) {
       const name = String(req.body.name).trim();
       if (name.length < 1 || name.length > 80) {
         return res.status(400).json({
-          error: "Name must be 1 to 80 characters over here"
+          error: "Name must be 1 to 80 characters over here",
         });
       }
       project.name = name;
     }
-    
+
     // Update HTML [7]
     if (req.body.html !== undefined) {
       const html = String(req.body.html);
-      if (html.length > 500000) { // Limit to 500,000 characters [7]
+      if (html.length > 500000) {
+        // Limit to 500,000 characters [7]
         return res.status(400).json({
-          error: "HTML is too long over here"
+          error: "HTML is too long over here",
         });
       }
       project.html = html;
     }
-    
+
     // Toggle published state [8]
     if (req.body.published !== undefined) {
       const published = Boolean(req.body.published);
       project.published = published;
       project.publishedAt = published ? new Date() : null;
     }
-    
+
     await project.save();
-    
+
     return res.json({
-      project: project.toClient()
+      project: project.toClient(),
     });
   } catch (err) {
     next(err);
@@ -151,11 +156,11 @@ export async function remove(req, res, next) {
   try {
     const project = await loadOwnProject(req.params.id, req, res);
     if (!project) return;
-    
+
     await project.deleteOne();
-    
+
     return res.json({
-      ok: true
+      ok: true,
     });
   } catch (err) {
     next(err);
@@ -172,92 +177,6 @@ function visibleText(html) {
     .replace(/\s+/g, " ")
     .trim();
 }
-
-// 6. Generate or Refine Website Code using AI [11-16, 20]
-// export async function generate(req, res, next) {
-//   try {
-//     const project = await loadOwnProject(req.params.id, req, res);
-//     if (!project) return;
-    
-//     // First generation cost is 5, edit/refinement cost is 2 [11]
-//     const isFirstTime = !project.html || project.html.length < 100;
-//     const cost = isFirstTime ? 5 : 2;
-    
-//     // Check if user has sufficient credits [13]
-//     if (req.user.credits < cost) {
-//       return res.status(400).json({
-//         error: `You need at least ${cost} credits to generate the site over here`
-//       });
-//     }
-    
-//     const prompt = (req.body.prompt || "").trim();
-//     if (!prompt) {
-//       return res.status(400).json({
-//         error: "Prompt is required over here"
-//       });
-//     }
-    
-//     if (prompt.length > 2000) { // Max limit 2000 characters [13]
-//       return res.status(400).json({
-//         error: "Prompt is too long over here"
-//       });
-//     }
-    
-//     // Add prompt to project messages [13]
-//     project.messages.push({
-//       role: "user",
-//       text: prompt
-//     });
-    
-//     // Enhance prompt using LLM if first generation [14]
-//     let enhancedPrompt = project.enhancedPrompt;
-//     if (isFirstTime) {
-//       enhancedPrompt = await enhancePrompt(prompt);
-//       project.enhancedPrompt = enhancedPrompt;
-//     }
-    
-//     // Formulate previous conversation history for LLM context [15]
-//     const history = project.messages.map((m) => ({
-//       role: m.role,
-//       text: m.text
-//     }));
-    
-//     // Trigger live site HTML generation/refinement [15, 16]
-//     const outcome = await generateSite({
-//       previousHtml: project.html,
-//       history,
-//       prompt,
-//       enhancedPrompt
-//     });
-    
-//     project.html = outcome.html;
-    
-//     // Add AI response as assistant message [12]
-//     project.messages.push({
-//       role: "assistant",
-//       text: outcome.message || "Here is your generated website code over here"
-//     });
-    
-//     // Deduct user credits [12]
-//     req.user.credits -= cost;
-//     await req.user.save();
-    
-//     await project.save();
-    
-//     return res.json({
-//       project: project.toClient(),
-//       user: req.user.toClient()
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// }
-
-
-
-
-
-
 
 // 6. Generate or Refine Website Code using AI [11-16, 20]
 
@@ -284,8 +203,7 @@ export async function generate(req, res, next) {
 
     // First generation = 5 credits
     // Refinement = 2 credits
-    const isFirstTime =
-      !project.html || project.html.length < 100;
+    const isFirstTime = !project.html || project.html.length < 100;
 
     const cost = isFirstTime ? 5 : 2;
 
@@ -343,11 +261,7 @@ export async function generate(req, res, next) {
       });
     }
 
-    console.log(
-      "✅ Website generated:",
-      outcome.html.length,
-      "characters"
-    );
+    console.log("✅ Website generated:", outcome.html.length, "characters");
 
     // Get the latest version of the project
     const latestProject = await Project.findOne({
@@ -365,8 +279,7 @@ export async function generate(req, res, next) {
     if (
       latestProject.updatedAt &&
       project.updatedAt &&
-      latestProject.updatedAt.getTime() !==
-        project.updatedAt.getTime()
+      latestProject.updatedAt.getTime() !== project.updatedAt.getTime()
     ) {
       return res.status(409).json({
         error:
@@ -384,14 +297,10 @@ export async function generate(req, res, next) {
     // The first prompt already exists because it was saved
     // when the project was created, so avoid duplicating it.
     const lastMessage =
-      latestProject.messages[
-        latestProject.messages.length - 1
-      ];
+      latestProject.messages[latestProject.messages.length - 1];
 
     const alreadySaved =
-      lastMessage &&
-      lastMessage.role === "user" &&
-      lastMessage.text === prompt;
+      lastMessage && lastMessage.role === "user" && lastMessage.text === prompt;
 
     if (!alreadySaved) {
       latestProject.messages.push({
@@ -403,42 +312,19 @@ export async function generate(req, res, next) {
     // Save AI response
     latestProject.messages.push({
       role: "assistant",
-      text:
-        outcome.message ||
-        "Here is your generated website.",
+      text: outcome.message || "Here is your generated website.",
     });
 
-    // Deduct credits safely
-    const updatedUser =
-      await req.user.constructor.findOneAndUpdate(
-        {
-          _id: req.user._id,
-          credits: { $gte: cost },
-        },
-        {
-          $inc: { credits: -cost },
-        },
-        {
-          new: true,
-        }
-      );
-
-    if (!updatedUser) {
-      return res.status(400).json({
-        error: "Insufficient credits",
-      });
-    }
+    // Deduct credits
+    req.user.credits -= cost;
+    await req.user.save();
 
     try {
       await latestProject.save();
     } catch (saveError) {
       // Refund credits if project save fails
-      await req.user.constructor.findByIdAndUpdate(
-        req.user._id,
-        {
-          $inc: { credits: cost },
-        }
-      );
+      req.user.credits += cost;
+      await req.user.save();
 
       throw saveError;
     }
@@ -448,8 +334,9 @@ export async function generate(req, res, next) {
 
     return res.json({
       project: latestProject.toClient(),
-      user: updatedUser.toClient(),
+      user: req.user.toClient(),
     });
+
   } catch (err) {
     console.error("❌ GENERATE ERROR:", err);
     next(err);

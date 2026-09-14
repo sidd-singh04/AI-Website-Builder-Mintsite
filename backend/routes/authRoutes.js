@@ -5,7 +5,6 @@ import {
   resendRegister,
   login,
   me,
-  contributions,
   updateProfile,
   changePassword,
   deleteAccount
@@ -25,7 +24,6 @@ authRouter.post("/login", login);
 
 // 3. Current User Profile & Contribution History (Protected)
 authRouter.get("/me", requireAuth, me);
-authRouter.get("/me/contributions", requireAuth, contributions);
 
 // 4. Profile Management (Protected)
 authRouter.patch("/me", requireAuth, updateProfile);
@@ -35,4 +33,4 @@ authRouter.delete("/me", requireAuth, deleteAccount);
 // 5. Password Reset Flow (Sub-Router)
 authRouter.use("/forgot", forgotRoutes);
 
-export default authRouter;
+export default authRouter; 

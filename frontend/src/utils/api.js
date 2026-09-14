@@ -155,11 +155,7 @@ export const deleteMyAccount = () =>
     API.delete("/auth/me")
   );
 
-// Contribution history
-export const getContributions = () =>
-  body(
-    API.get("/auth/me/contributions")
-  );
+
 
 // ============================================================
 // FORGOT PASSWORD
