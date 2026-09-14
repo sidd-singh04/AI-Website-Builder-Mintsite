@@ -1,5 +1,4 @@
 import axios from "axios";
-
 // ============================================================
 // AXIOS API INSTANCE
 // ============================================================
@@ -40,17 +39,11 @@ API.interceptors.response.use(
   (res) => res,
 
   (err) => {
-    const url = err.config?.url || "";
-
-    if (
-      err.response?.status === 401
-    ) {
+    if (err.response?.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
 
-      if (
-        window.location.pathname !== "/login"
-      ) {
+      if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }
     }
@@ -87,34 +80,6 @@ export const register = (data) =>
     API.post("/auth/register", data)
   );
 
-// Verify registration OTP
-export const registerVerify = (
-  email,
-  code
-) =>
-  body(
-    API.post(
-      "/auth/register/verify",
-      {
-        email,
-        code,
-      }
-    )
-  );
-
-// Resend registration OTP
-export const registerResend = (
-  email
-) =>
-  body(
-    API.post(
-      "/auth/register/resend",
-      {
-        email,
-      }
-    )
-  );
-
 // Login
 export const login = (data) =>
   body(
@@ -128,9 +93,7 @@ export const getMe = () =>
   );
 
 // Update profile
-export const updateProfile = (
-  data
-) =>
+export const updateProfile = (data) =>
   body(
     API.patch(
       "/auth/me",
@@ -139,9 +102,7 @@ export const updateProfile = (
   );
 
 // Change password
-export const changePassword = (
-  data
-) =>
+export const changePassword = (data) =>
   body(
     API.patch(
       "/auth/me/password",
@@ -155,54 +116,6 @@ export const deleteMyAccount = () =>
     API.delete("/auth/me")
   );
 
-
-
-// ============================================================
-// FORGOT PASSWORD
-// ============================================================
-
-export const forgotRequest = (
-  email
-) =>
-  body(
-    API.post(
-      "/auth/forgot/request",
-      {
-        email,
-      }
-    )
-  );
-
-export const forgotVerifyCode = (
-  email,
-  code
-) =>
-  body(
-    API.post(
-      "/auth/forgot/verify-code",
-      {
-        email,
-        code,
-      }
-    )
-  );
-
-export const forgotReset = (
-  email,
-  code,
-  newPassword
-) =>
-  body(
-    API.post(
-      "/auth/forgot/reset",
-      {
-        email,
-        code,
-        newPassword,
-      }
-    )
-  );
-
 // ============================================================
 // PROJECTS
 // Backend:
@@ -214,9 +127,7 @@ export const getProjects = () =>
     API.get("/projects")
   );
 
-export const createProject = (
-  data
-) =>
+export const createProject = (data) =>
   body(
     API.post(
       "/projects",
@@ -224,9 +135,7 @@ export const createProject = (
     )
   );
 
-export const getProject = (
-  id
-) =>
+export const getProject = (id) =>
   body(
     API.get(
       `/projects/${id}`
@@ -244,9 +153,7 @@ export const updateProject = (
     )
   );
 
-export const deleteProject = (
-  id
-) =>
+export const deleteProject = (id) =>
   body(
     API.delete(
       `/projects/${id}`

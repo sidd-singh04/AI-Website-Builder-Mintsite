@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AuthShell from "../components/AuthShell.jsx";
 import { API } from "../utils/api.js";
+import { useAuth } from "../context/authContext.jsx";
 import s from "../styles/RegisterPage.module.css";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  
-  // Homepage prompt value input prefill validation checks
+  const { loginUser } = useAuth();
+
+  // Homepage prompt value
   const initialPrompt = searchParams.get("prompt") || "";
 
   const [form, setForm] = useState({
@@ -16,69 +18,73 @@ export default function RegisterPage() {
     email: "",
     password: ""
   });
-  
+
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Field change handler helper updates
+  // Update form fields
   const update = (field) => (event) => {
     setForm({
       ...form,
       [field]: event.target.value
     });
-    // Clear validation error on key down/interaction
+
     setErrors({
       ...errors,
       [field]: undefined
     });
+
     setSubmitError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const er = {};
 
-    // Form Field Validations matching back-end controller guards
+    // Frontend validation
     if (!form.name.trim() || form.name.trim().length < 2) {
-      er.name = "Enter your name over here";
+      er.name = "Enter your name";
     }
-    
+
     if (!form.email.includes("@")) {
-      er.email = "Enter a valid email over here";
+      er.email = "Enter a valid email";
     }
 
     if (form.password.length < 6) {
-      er.password = "At least six characters for the password is required over here";
+      er.password = "Password must be at least 6 characters";
     }
 
     setErrors(er);
 
-    // If there are validation errors, halt submission
     if (Object.keys(er).length > 0) return;
 
     setLoading(true);
     setSubmitError("");
 
     try {
-      // Trigger live axios API call pointing to endpoint
+      // Create account
       const res = await API.post("/auth/register", form);
-      const result = res.data;
 
-      // Pass email as search parameter to verify email screen
-      const params = new URLSearchParams({ email: result.email });
-      
-      // Keep prompt if redirect was completed from index
+      const { token, user } = res.data;
+
+      // Registration also logs the user in
+      loginUser(token, user);
+
+      // Keep the existing prompt flow
       if (initialPrompt) {
-        params.append("prompt", initialPrompt);
+        navigate(
+          `/dashboard?prompt=${encodeURIComponent(initialPrompt)}`
+        );
+      } else {
+        navigate("/dashboard");
       }
-
-      navigate(`/verify-email?${params.toString()}`);
     } catch (err) {
       setSubmitError(
-        err.response?.data?.error || 
-        err.response?.data?.message || 
-        "Something went wrong over here during registration"
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Something went wrong during registration"
       );
     } finally {
       setLoading(false);
@@ -88,7 +94,7 @@ export default function RegisterPage() {
   return (
     <AuthShell
       title="Sign Up"
-      subtitle="Enter your information to create an account over here"
+      subtitle="Enter your information to create an account"
       footer={
         <>
           Already have an account?{" "}
@@ -102,6 +108,7 @@ export default function RegisterPage() {
         {/* Name Input Group */}
         <div className={s.inputGroup}>
           <label className={s.label}>Name</label>
+
           <input
             type="text"
             placeholder="Name"
@@ -110,12 +117,16 @@ export default function RegisterPage() {
             className={`${s.input} ${errors.name ? s.inputError : ""}`}
             autoComplete="name"
           />
-          {errors.name && <p className={s.errorText}>{errors.name}</p>}
+
+          {errors.name && (
+            <p className={s.errorText}>{errors.name}</p>
+          )}
         </div>
 
         {/* Email Input Group */}
         <div className={s.inputGroup}>
           <label className={s.label}>Email</label>
+
           <input
             type="email"
             placeholder="me@example.com"
@@ -124,12 +135,16 @@ export default function RegisterPage() {
             className={`${s.input} ${errors.email ? s.inputError : ""}`}
             autoComplete="email"
           />
-          {errors.email && <p className={s.errorText}>{errors.email}</p>}
+
+          {errors.email && (
+            <p className={s.errorText}>{errors.email}</p>
+          )}
         </div>
 
         {/* Password Input Group */}
         <div className={s.inputGroup}>
           <label className={s.label}>Password</label>
+
           <input
             type="password"
             placeholder="Password"
@@ -138,27 +153,46 @@ export default function RegisterPage() {
             className={`${s.input} ${errors.password ? s.inputError : ""}`}
             autoComplete="new-password"
           />
-          {errors.password && <p className={s.errorText}>{errors.password}</p>}
+
+          {errors.password && (
+            <p className={s.errorText}>{errors.password}</p>
+          )}
         </div>
 
-        {/* Error Notice Panel */}
-        {submitError && <p className={s.submitError}>{submitError}</p>}
+        {/* Error Notice */}
+        {submitError && (
+          <p className={s.submitError}>{submitError}</p>
+        )}
 
-        {/* Submit Actions */}
-        <button type="submit" disabled={loading} className={s.submitButton}>
-          {loading ? "Sending code..." : "Send verification code"}
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className={s.submitButton}
+        >
+          {loading ? "Creating account..." : "Create account"}
         </button>
 
-        {/* Informative Instructions panel */}
+        {/* Informative Instructions */}
         <div className={s.infoBox}>
           <div className={s.infoRow}>
             <span className={`${s.infoIndicator} ${s.indigo}`} />
-            <span>We will email a six-digit code. Enter it to verify, then sign in over here.</span>
+
+            <span>
+              Create your account and start building websites with
+              Mintsite.
+            </span>
           </div>
+
           <div className={s.infoRow}>
             <span className={`${s.infoIndicator} ${s.emerald}`} />
+
             <span>
-              You get <span className={s.infoHighlighted}>20 free credits</span> on first login over here.
+              You get{" "}
+              <span className={s.infoHighlighted}>
+                20 free credits
+              </span>{" "}
+              when you create your account.
             </span>
           </div>
         </div>

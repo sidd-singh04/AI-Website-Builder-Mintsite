@@ -1,33 +1,8 @@
 import { User } from "../models/User.js";
 import { Project } from "../models/Project.js";
-import {
-  generateOtp,
-  saveOtp,
-  sendOtpEmail,
-  verifyOtp,
-} from "../utils/services.js";
 import { signToken } from "../middleware/auth.js";
 
-// Helper function to issue and send OTP
-async function issueAndSend(email, name, status, res, code = 201) {
-  const OTP = generateOtp();
-
-  saveOtp(email, OTP);
-
-  await sendOtpEmail({
-    to: email,
-    name,
-    code: OTP,
-    purpose: status
-  });
-
-  return res.status(code).json({
-    ok: true,
-    email
-  });
-}
-
-// 1. Register User and send OTP
+// 1. Register User
 export async function register(req, res, next) {
   try {
     const { name, email, password } = req.body;
@@ -53,81 +28,22 @@ export async function register(req, res, next) {
     const existing = await User.findOne({ email });
 
     if (existing) {
-      if (existing.emailVerified) {
-        return res.status(409).json({
-          error: "Email is already in use"
-        });
-      }
-
-      return issueAndSend(
-        email,
-        existing.name,
-        "signup",
-        res,
-        200
-      );
+      return res.status(409).json({
+        error: "Email is already in use"
+      });
     }
 
     const user = await User.create({
       name,
       email,
-      passwordHash: await User.hashPassword(password),
-      emailVerified: false
+      passwordHash: await User.hashPassword(password)
     });
 
-    return issueAndSend(
-      user.email,
-      user.name,
-      "signup",
-      res,
-      201
-    );
+    const token = signToken(user._id.toString());
 
-  } catch (err) {
-    next(err);
-  }
-}
-
-// 2. Verify Registration OTP
-export async function verifyRegister(req, res, next) {
-  try {
-    const { email, code } = req.body;
-
-    if (!email || !code) {
-      return res.status(400).json({
-        error: "Email and code are required"
-      });
-    }
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({
-        error: "User not found"
-      });
-    }
-
-    if (user.emailVerified) {
-      return res.status(200).json({
-        ok: true,
-        alreadyVerified: true
-      });
-    }
-
-    const result = verifyOtp(email, code);
-
-    if (!result.ok) {
-      return res.status(400).json({
-        error: result.reason
-      });
-    }
-
-    user.emailVerified = true;
-
-    await user.save();
-
-    return res.status(200).json({
-      ok: true
+    return res.status(201).json({
+      token,
+      user: user.toClient()
     });
 
   } catch (err) {
@@ -135,47 +51,7 @@ export async function verifyRegister(req, res, next) {
   }
 }
 
-// 3. Resend Registration OTP
-export async function resendRegister(req, res, next) {
-  try {
-    const email = (req.body.email || "")
-      .trim()
-      .toLowerCase();
-
-    if (!email) {
-      return res.status(400).json({
-        error: "Email is required"
-      });
-    }
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({
-        error: "No account found with this email"
-      });
-    }
-
-    if (user.emailVerified) {
-      return res.status(400).json({
-        error: "Email is already verified"
-      });
-    }
-
-    return issueAndSend(
-      email,   // isko bhi user.email kr skte the
-      user.name,
-      "signup",
-      res,
-      200
-    );
-
-  } catch (err) {
-    next(err);
-  }
-}
-
-// 4. User Login
+// 2. User Login
 export async function login(req, res, next) {
   try {
     const { email, password } = req.body;
@@ -202,14 +78,6 @@ export async function login(req, res, next) {
       });
     }
 
-    if (!user.emailVerified) {
-      return res.status(403).json({
-        error: "Please verify your email first",
-        needsVerification: true,
-        email: user.email
-      });
-    }
-
     const token = signToken(user._id.toString());
 
     return res.json({
@@ -222,7 +90,7 @@ export async function login(req, res, next) {
   }
 }
 
-// 5. Get Logged-In User Profile
+// 3. Get Logged-In User Profile
 export async function me(req, res, next) {
   try {
     return res.json({
@@ -233,9 +101,7 @@ export async function me(req, res, next) {
   }
 }
 
-
-
-// 6. Update User Profile
+// 4. Update User Profile
 export async function updateProfile(req, res, next) {
   try {
     const name =
@@ -268,7 +134,7 @@ export async function updateProfile(req, res, next) {
   }
 }
 
-// 7. Change Password
+// 5. Change Password
 export async function changePassword(req, res, next) {
   try {
     const {
@@ -311,10 +177,9 @@ export async function changePassword(req, res, next) {
   }
 }
 
-// 8. Delete User Account
+// 6. Delete User Account
 export async function deleteAccount(req, res, next) {
   try {
-
     await Project.deleteMany({
       user: req.user._id
     });

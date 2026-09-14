@@ -45,6 +45,36 @@ export async function list(req, res, next) {
   }
 }
 
+// Create a clean title from the user's prompt
+function generateProjectName(prompt) {
+  let title = prompt
+    .replace(
+      /^(please\s+)?(make|create|build|generate|design|develop|give me|i want|can you make|can you create)\s+/i,
+      "",
+    )
+    .trim();
+
+  // Remove common filler phrases
+  title = title.replace(/^(me\s+)?(a|an|the)\s+/i, "").trim();
+
+  // Convert to title case
+  title = title
+    .split(/\s+/)
+    .map((word) => {
+      if (!word) return "";
+
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ");
+
+  // Keep project names reasonably short
+  if (title.length > 60) {
+    title = title.slice(0, 60).trim();
+  }
+
+  return title || "Untitled Project";
+}
+
 // 2. Create a New Project [4, 5, 18]
 export async function create(req, res, next) {
   try {
@@ -63,12 +93,11 @@ export async function create(req, res, next) {
       });
     }
 
-    // Generate dynamic fallback name from prompt split [5]
+    // Generate a clean project title from the prompt
     let finalName = name;
+
     if (!finalName) {
-      finalName =
-        prompt.split(" ").slice(0, 5).join(" ").slice(0, 60) ||
-        "Untitled Project";
+      finalName = generateProjectName(prompt);
     }
 
     const project = await Project.create({
@@ -336,7 +365,6 @@ export async function generate(req, res, next) {
       project: latestProject.toClient(),
       user: req.user.toClient(),
     });
-
   } catch (err) {
     console.error("❌ GENERATE ERROR:", err);
     next(err);

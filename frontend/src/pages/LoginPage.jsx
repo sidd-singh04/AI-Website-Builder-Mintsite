@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { CheckCircle2 } from "lucide-react";
 import AuthShell from "../components/AuthShell.jsx";
 import { useAuth } from "../context/authContext.jsx";
 import { login } from "../utils/api.js";
@@ -11,9 +10,8 @@ export default function LoginPage() {
   const { loginUser } = useAuth();
   const [searchParams] = useSearchParams();
 
-  // Retrieve parameters passed during registration/email verification redirects
+  // Get parameters passed from other pages
   const initialEmail = searchParams.get("email") || "";
-  const justVerified = searchParams.get("verified") === "1";
   const initialPrompt = searchParams.get("prompt") || "";
 
   const [form, setForm] = useState({
@@ -25,7 +23,7 @@ export default function LoginPage() {
   const [submitError, setSubmitError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Prefill email if it changes in search parameters
+  // Prefill email if it is provided in the URL
   useEffect(() => {
     if (initialEmail) {
       setForm((prev) => ({
@@ -35,7 +33,7 @@ export default function LoginPage() {
     }
   }, [initialEmail]);
 
-  // Generic input change handler
+  // Input change handler
   const update = (field) => (event) => {
     setForm((prev) => ({
       ...prev,
@@ -66,7 +64,6 @@ export default function LoginPage() {
 
     setErrors(er);
 
-    // Stop if validation fails
     if (Object.keys(er).length > 0) {
       return;
     }
@@ -75,8 +72,7 @@ export default function LoginPage() {
     setSubmitError("");
 
     try {
-      // api.js handles:
-      // POST /api/auth/login
+      // Login API
       const res = await login(form);
 
       const { token, user } = res;
@@ -92,34 +88,14 @@ export default function LoginPage() {
       } else {
         navigate("/dashboard");
       }
-
     } catch (err) {
-      const status = err.response?.status;
       const data = err.response?.data || {};
-
-      // User exists but email is not verified
-      if (
-        status === 403 &&
-        data.needsVerification &&
-        data.email
-      ) {
-        const params = new URLSearchParams({
-          email: data.email
-        });
-
-        if (initialPrompt) {
-          params.append("prompt", initialPrompt);
-        }
-
-        navigate(`/verify-email?${params.toString()}`);
-        return;
-      }
 
       setSubmitError(
         data.error ||
+        data.message ||
         "Invalid email or password."
       );
-
     } finally {
       setLoading(false);
     }
@@ -145,21 +121,6 @@ export default function LoginPage() {
         onSubmit={handleSubmit}
         className={s.form}
       >
-
-        {/* Verification Success Notice */}
-        {justVerified && !submitError && (
-          <div className={s.verifiedBanner}>
-            <CheckCircle2
-              size={18}
-              className={s.verifiedIcon}
-            />
-
-            <span>
-              Email verified! Sign in to get your 20 free credits.
-            </span>
-          </div>
-        )}
-
         {/* Email */}
         <div className={s.inputGroup}>
           <label className={s.label}>
@@ -186,18 +147,9 @@ export default function LoginPage() {
 
         {/* Password */}
         <div className={s.inputGroup}>
-          <div className={s.passwordRow}>
-            <label className={s.label}>
-              Password
-            </label>
-
-            <Link
-              to="/forgot-password"
-              className={s.forgotLink}
-            >
-              Forgot your password?
-            </Link>
-          </div>
+          <label className={s.label}>
+            Password
+          </label>
 
           <input
             type="password"
@@ -230,11 +182,8 @@ export default function LoginPage() {
           disabled={loading}
           className={s.submitButton}
         >
-          {loading
-            ? "Signing in..."
-            : "Login"}
+          {loading ? "Signing in..." : "Login"}
         </button>
-
       </form>
     </AuthShell>
   );

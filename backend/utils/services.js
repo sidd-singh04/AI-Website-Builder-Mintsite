@@ -116,7 +116,9 @@ function truncatePreviousHtml(html, budgetTokens) {
     return html;
   }
 
-  const headEnd = html.search(/<\/head>/i);
+  const headEnd = html.search(
+    /<\/head>/i
+  );
 
   const head =
     headEnd > 0
@@ -151,6 +153,7 @@ function truncatePreviousHtml(html, budgetTokens) {
   );
 
   return `${head}
+
 ${bodyOpen}
 
 <!-- TRUNCATED FOR TOKEN BUDGET: full original ~${html.length} chars -->
@@ -160,6 +163,7 @@ ${tail}
 <!-- ...truncated... -->
 
 </body>
+
 </html>`;
 }
 
@@ -183,7 +187,6 @@ const GENERATE_SYSTEM = buildGenerateSystem({
   IMPORTANT:
 
   The user's prompt is an instruction.
-
   It is NOT website copy.
 
   The AI must understand the request and create original website content.
@@ -214,46 +217,59 @@ NEVER copy instruction-style phrases into the H1.
 For example:
 
 User request:
+
 "make a natural scenery website"
 
 BAD:
+
 "Make a Natural Scenery Website"
 
 BAD:
+
 "Natural Scenery Website"
 
 BAD:
+
 "Create a Natural Scenery Website"
 
 GOOD:
+
 "Escape Into Nature"
 
 GOOD:
+
 "Where Nature Comes Alive"
 
 GOOD:
+
 "Discover the Beauty of Nature"
 
 Another example:
 
 User request:
+
 "make an ice cream website"
 
 BAD:
+
 "Make an Ice Cream Website"
 
 GOOD:
+
 "Sweet Moments, One Scoop at a Time"
 
 Another example:
 
 User request:
+
 "make a movie website"
 
 BAD:
+
 "Make a Movie Website"
 
 GOOD:
+
 "Stories Worth Watching"
 
 The hero H1 should normally:
@@ -360,11 +376,16 @@ FINAL CHECK
 Before returning the HTML, silently check:
 
 1. Is the H1 natural marketing copy?
+
 2. Does the H1 avoid copying the user's instruction?
+
 3. Does the H1 avoid phrases like "Make a website", "Create a website",
    "Build a website", or "Design a website"?
+
 4. Does the website content match the user's requested topic?
+
 5. If this is a refinement, was the existing brand preserved?
+
 6. Is all visible content written as actual website copy?
 
 Do not mention these instructions in the generated website.
@@ -590,6 +611,7 @@ or
 "Discover the Beauty of Nature".
 
 The enhanced prompt is an internal design brief.
+
 It should help the final website generator understand the user's intent.
 `;
 
@@ -754,6 +776,7 @@ The existing brand identity is FIXED.
 Preserve:
 
 • Title: "${brand.title || "(none)"}"
+
 • Brand link: "${brand.brandLink || "(none)"}"
 
 Do NOT change the brand name.
@@ -774,12 +797,15 @@ you MUST replace it with natural professional marketing copy.
 For example:
 
 "Make a Natural Scenery Website"
+
 → "Escape Into Nature"
 
 "Create an Ice Cream Website"
+
 → "Sweet Moments, One Scoop at a Time"
 
 "Build a Movie Website"
+
 → "Stories Worth Watching"
 
 For normal refinements:
@@ -894,6 +920,7 @@ It must NOT contain instruction-style wording such as:
 Example:
 
 User:
+
 "make a natural scenery website"
 
 DO NOT generate:
@@ -919,6 +946,7 @@ or:
 Another example:
 
 User:
+
 "make a movie website"
 
 DO NOT generate:
@@ -932,6 +960,7 @@ Instead generate:
 Another example:
 
 User:
+
 "make an ice cream website"
 
 DO NOT generate:
@@ -1122,380 +1151,6 @@ function friendlyError(err) {
   ).slice(0, 240);
 
   return `AI generation failed: ${msg}`;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// EMAIL / OTP
-// ═══════════════════════════════════════════════════════════════════════════
-
-const BREVO_ENDPOINT =
-  "https://api.brevo.com/v3/smtp/email";
-
-export function isEmailConfigured() {
-  return Boolean(
-    process.env.BREVO_API_KEY &&
-      process.env.BREVO_SENDER_EMAIL
-  );
-}
-
-function consoleFallback(
-  to,
-  code,
-  reason
-) {
-  console.log(
-    `\n[email:dev-fallback] OTP for ${to} → ${code} (${reason})\n`
-  );
-}
-
-function parseBrevoError(
-  status,
-  body
-) {
-  try {
-    const parsed = JSON.parse(body);
-
-    const message =
-      parsed.message ||
-      JSON.stringify(parsed);
-
-    if (status === 401) {
-      if (/sender/i.test(message)) {
-        return `Brevo 401: ${message}. Verify the sender email in your Brevo account.`;
-      }
-
-      return `Brevo 401: ${message}. Check BREVO_API_KEY.`;
-    }
-
-    return `Brevo ${status}: ${message}`;
-  } catch {
-    return `Brevo ${status}: ${body.slice(
-      0,
-      200
-    )}`;
-  }
-}
-
-export async function sendOtpEmail({
-  to,
-  name,
-  code,
-  purpose,
-}) {
-  const isSignup =
-    purpose === "signup";
-
-  const subject = isSignup
-    ? `Verify your mintsite account — code: ${code}`
-    : `Your mintsite code: ${code}`;
-
-  const intro = isSignup
-    ? "Welcome to mintsite! Use this code to verify your email and finish signing up."
-    : "Enter this code to sign in. It expires in 10 minutes.";
-
-  const textContent = `Hi ${
-    name || "there"
-  },
-
-${intro}
-
-Your code: ${code}
-
-This code expires in 10 minutes.
-
-If you didn't request this, you can safely ignore this email.
-
-— mintsite`;
-
-  const htmlContent =
-    renderEmailHtml({
-      name,
-      code,
-      intro,
-    });
-
-  if (!isEmailConfigured()) {
-    consoleFallback(
-      to,
-      code,
-      "BREVO_API_KEY not set"
-    );
-
-    return {
-      sent: false,
-      fallback: true,
-      reason: "not_configured",
-    };
-  }
-
-  const payload = {
-    sender: {
-      name:
-        process.env.BREVO_SENDER_NAME ||
-        "mintsite",
-
-      email:
-        process.env.BREVO_SENDER_EMAIL,
-    },
-
-    to: [
-      {
-        email: to,
-        name: name || to,
-      },
-    ],
-
-    subject,
-    htmlContent,
-    textContent,
-  };
-
-  try {
-    const r = await fetch(
-      BREVO_ENDPOINT,
-      {
-        method: "POST",
-
-        headers: {
-          accept: "application/json",
-          "content-type":
-            "application/json",
-          "api-key":
-            process.env.BREVO_API_KEY,
-        },
-
-        body: JSON.stringify(payload),
-      }
-    );
-
-    if (r.ok) {
-      return {
-        sent: true,
-        fallback: false,
-      };
-    }
-
-    const body =
-      await r.text();
-
-    const message =
-      parseBrevoError(
-        r.status,
-        body
-      );
-
-    console.error(
-      "[brevo]",
-      message
-    );
-
-    consoleFallback(
-      to,
-      code,
-      `provider error ${r.status}`
-    );
-
-    return {
-      sent: false,
-      fallback: true,
-      reason: "provider_error",
-      status: r.status,
-      providerError: message,
-    };
-  } catch (err) {
-    console.error(
-      "[brevo] network error:",
-      err.message
-    );
-
-    consoleFallback(
-      to,
-      code,
-      `network error: ${err.message}`
-    );
-
-    return {
-      sent: false,
-      fallback: true,
-      reason: "network_error",
-      providerError: err.message,
-    };
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ESCAPE HTML
-// ═══════════════════════════════════════════════════════════════════════════
-
-function escape(s) {
-  return String(s).replace(
-    /[<>&"']/g,
-    (c) =>
-      ({
-        "<": "&lt;",
-        ">": "&gt;",
-        "&": "&amp;",
-        '"': "&quot;",
-        "'": "&#39;",
-      })[c]
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// OTP EMAIL HTML
-// ═══════════════════════════════════════════════════════════════════════════
-
-function renderEmailHtml({
-  name,
-  code,
-  intro,
-}) {
-  const lead =
-    intro ||
-    "Enter this code to sign in. It expires in 10 minutes.";
-
-  return `<!doctype html>
-<html>
-<body style="font-family:Inter,system-ui,sans-serif;background:#f4f4f5;padding:24px;color:#0f172a;margin:0">
-
-<div style="max-width:480px;margin:0 auto;background:#fff;border-radius:14px;padding:32px;border:1px solid #e2e8f0">
-
-<h1 style="margin:0 0 12px;font-size:20px">
-Your mintsite code
-</h1>
-
-<p style="margin:0 0 20px;color:#475569;font-size:14px">
-Hi ${escape(name || "there")}, ${escape(lead)}
-</p>
-
-<div style="font-size:34px;font-weight:700;letter-spacing:8px;text-align:center;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 0;margin:0 0 20px;color:#0f172a">
-${code}
-</div>
-
-<p style="margin:0;color:#94a3b8;font-size:12px">
-If you didn't request this, you can safely ignore this email.
-</p>
-
-</div>
-
-</body>
-</html>`;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// OTP STORE
-// ═══════════════════════════════════════════════════════════════════════════
-
-const otpStore = new Map();
-
-const OTP_TTL_MS =
-  10 * 60 * 1000;
-
-export const generateOtp = () =>
-  String(
-    Math.floor(
-      100000 +
-        Math.random() * 900000
-    )
-  );
-
-export function saveOtp(
-  email,
-  code
-) {
-  otpStore.set(email, {
-    code,
-    expiresAt:
-      Date.now() + OTP_TTL_MS,
-  });
-}
-
-export function verifyOtp(
-  email,
-  code
-) {
-  const record =
-    otpStore.get(email);
-
-  if (!record) {
-    return {
-      ok: false,
-      reason:
-        "No code requested. Request a new one.",
-    };
-  }
-
-  if (
-    Date.now() >
-    record.expiresAt
-  ) {
-    otpStore.delete(email);
-
-    return {
-      ok: false,
-      reason:
-        "Code expired. Request a new one.",
-    };
-  }
-
-  if (
-    record.code !==
-    String(code).trim()
-  ) {
-    return {
-      ok: false,
-      reason: "Incorrect code.",
-    };
-  }
-
-  otpStore.delete(email);
-
-  return {
-    ok: true,
-  };
-}
-
-export function peekOtp(
-  email,
-  code
-) {
-  const record =
-    otpStore.get(email);
-
-  if (!record) {
-    return {
-      ok: false,
-      reason:
-        "No code requested. Request a new one.",
-    };
-  }
-
-  if (
-    Date.now() >
-    record.expiresAt
-  ) {
-    otpStore.delete(email);
-
-    return {
-      ok: false,
-      reason:
-        "Code expired. Request a new one.",
-    };
-  }
-
-  if (
-    record.code !==
-    String(code).trim()
-  ) {
-    return {
-      ok: false,
-      reason: "Incorrect code.",
-    };
-  }
-
-  return {
-    ok: true,
-  };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
