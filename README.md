@@ -75,7 +75,6 @@ Generation, refinement, and preview live together in one workspace, so every cha
 * Razorpay order creation
 * Server-side payment verification
 * Credits added automatically after successful payment
-* Payment history view
 
 | Package | Price | Credits |
 | ------- | ----- | ------- |
