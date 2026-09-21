@@ -1210,8 +1210,8 @@ export async function createRazorpayOrder({
       amount,
       currency,
       receipt,
-      notes,
-    });
+      notes, 
+    }); 
 
   return {
     id: order.id,
