@@ -10,9 +10,6 @@ MintSite is a full-stack MERN application where users describe the website they 
 
 The project integrates multiple services — **Gemini API, Groq API, Razorpay, MongoDB, and React** — into a single full-stack application.
 
-🔗 **Live Demo:** [ai-website-builder-mintsite.vercel.app](https://ai-website-builder-mintsite.vercel.app)
-
----
 
 ## 🚀 Features
 
