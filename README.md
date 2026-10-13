@@ -94,7 +94,7 @@ Generation, refinement, and preview live together in one workspace, so every cha
 * View tracking on published projects, with repeat views from the same user handled appropriately
 
 <p align="center">
-  <img src="screenshots/community.png" width="750" alt="Community Showcase">
+  <img src="screenshots/community-new-image.png" width="750" alt="Community Showcase">
 </p>
 
 ### 🛟 Fallback Website Generator
