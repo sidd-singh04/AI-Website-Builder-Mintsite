@@ -1,4 +1,4 @@
-# MintSite
+# 🌐 MintSite
 
 > **An AI-powered website builder that turns a single natural-language prompt into a complete website — with a chat-based workspace for refinement, live responsive preview, a credit system, Razorpay payments, and a community showcase.**
 
